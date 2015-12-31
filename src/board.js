@@ -20,10 +20,14 @@ class Board {
      * @returns {number|null} the winning player or null
      */
     makeMove(player, coordinates) {
+        if (this.gameWinner) {
+            throw 'Game has already ended';
+        }
         // valid move
         if (this._markPlayerMove(player, coordinates)) {
             let winner = checkWin(this.grid);
-            if (winner) {
+            // need to check for null because a winning player can be int value 0
+            if (winner !== null) {
                 this.gameWinner = winner;
             }
             return winner;
@@ -64,9 +68,8 @@ class Board {
     }
 
     get gameGrid() {
-        return this.grid;
+        return JSON.parse(JSON.stringify(this.grid));
     }
-
 }
 
 export default Board;

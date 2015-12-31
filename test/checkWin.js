@@ -3,7 +3,7 @@ import chai from 'chai';
 
 let assert = chai.assert;
 
-describe('Check wins', () => {
+describe('Check Win Condition', () => {
     it('Can check rows for winners', () => {
         let board = [
             [0, 0, 0],

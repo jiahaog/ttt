@@ -18,7 +18,8 @@ function checkWin(board) {
         let finalWinner = 0;
         _.each(winners, (value, winner) => {
             // only get one winner from the list
-            finalWinner = winner;
+            // need to parse int because object keys is a string
+            finalWinner = parseInt(winner);
         });
         return finalWinner;
     } else {

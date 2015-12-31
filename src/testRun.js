@@ -1,10 +1,19 @@
-/**
- * Created by JiaHao on 31/12/15.
- */
-
-
 import TicTacToe from './tictactoe';
-import PlayerHuman from './player';
+import {PlayerHuman, PlayerDumb} from './player';
 
-const game = new TicTacToe(new PlayerHuman('Human 0'), new PlayerHuman('Human 2'));
-game.start();
+const player0 = new PlayerDumb('Player0', [
+    [0, 0],
+    [1, 0],
+    [2, 0]
+]);
+const player1 = new PlayerDumb('Player1', [
+    [0, 2],
+    [1, 2],
+    [2, 2]
+]);
+
+const game = new TicTacToe(player0, player1);
+game.start(winner => {
+    console.log(`Game over, winner: ${winner}`);
+    game.showBoard();
+});
