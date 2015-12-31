@@ -19,7 +19,6 @@ function checkWin(board) {
         _.each(winners, (value, winner) => {
             // only get one winner from the list
             // need to parse int because object keys is a string
-            console.log(winner);
             finalWinner = parseInt(winner);
         });
         return finalWinner;
