@@ -7,7 +7,7 @@ describe('Tic-Tac-Toe Board', () => {
         it('Will fail invalid players', (done) => {
             const board = new Board();
             try {
-                board._markPlayerMove(0, [2, 2]);
+                board._markPlayerMove(-1, [2, 2]);
                 done('Invalid player was not caught');
             } catch (e) {
                 done();

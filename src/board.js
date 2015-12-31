@@ -6,10 +6,11 @@ const DIMENSIONS = 2;
 class Board {
     constructor() {
         this.grid = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
+            [-1, -1, -1],  // -1 used to indicate empty
+            [-1, -1, -1],
+            [-1, -1, -1]
         ];
+        this.gameWinner = null;
     }
 
     /**
@@ -19,8 +20,13 @@ class Board {
      * @returns {number|null} the winning player or null
      */
     makeMove(player, coordinates) {
+        // valid move
         if (this._markPlayerMove(player, coordinates)) {
-            return checkWin(this.grid);
+            let winner = checkWin(this.grid);
+            if (winner) {
+                this.gameWinner = winner;
+            }
+            return winner;
         }
     }
 
@@ -31,7 +37,7 @@ class Board {
     _markPlayerMove(player, coordinates) {
 
         // check if valid player
-        if (player < 1) {
+        if (player < 0) {
             throw 'Player is invalid';
         }
 
@@ -49,7 +55,7 @@ class Board {
 
         // check position is empty
         const playerAtCoordinates = this.grid[coordinates[1]][coordinates[0]];
-        if (playerAtCoordinates !== 0) {
+        if (playerAtCoordinates > -1) {
             throw 'Grid has already been occupied at point!'
         }
 

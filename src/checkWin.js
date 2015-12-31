@@ -46,7 +46,7 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
 
             }
 
-            if (!current) {
+            if (current < 0) {
                 // skip zero valued position
                 continue;
             }
@@ -82,7 +82,7 @@ function checkDiagonals(selector, board, winners) {
             current = board[board.length - 1 - i][i];
         }
 
-        if (!current) {
+        if (current < 0) {
             // skip zero valued position
             continue;
         }

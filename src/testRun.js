@@ -3,10 +3,8 @@
  */
 
 
-import Board from './board';
+import TicTacToe from './tictactoe';
+import PlayerHuman from './player';
 
-const board = new Board();
-console.log(board.makeMove(1, [1,0]));
-console.log(board.makeMove(1, [2,0]));
-console.log(board.makeMove(1, [0,0]));
-console.log(board.gameGrid);
+const game = new TicTacToe(new PlayerHuman('Human 0'), new PlayerHuman('Human 2'));
+game.start();
