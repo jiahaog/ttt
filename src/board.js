@@ -15,7 +15,7 @@ class Board {
     /**
      * @param {[[]]} [initGrid]
      */
-    constructor(initGrid=emptyGrid) {
+    constructor(initGrid = emptyGrid) {
         this.grid = deepCopy(initGrid);
         this.gameWinner = null;
     }

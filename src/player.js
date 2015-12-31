@@ -8,11 +8,13 @@ class Player {
     constructor(playerName) {
         this.playerName = playerName;
     }
+
     /**
      *
      * @param {[[]]} gameGrid A copied 2D array of the game grid
      */
-    getMove(gameGrid) {}
+    getMove(gameGrid) {
+    }
 }
 
 class HumanPlayer extends Player {

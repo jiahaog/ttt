@@ -23,7 +23,7 @@ class TicTacToe {
      * @param {gameOverCallback} callback
      */
     start(callback) {
-        while(this.board.gameWinner === null) {
+        while (this.board.gameWinner === null) {
             this.nextTurn();
         }
         callback(this.board.gameWinner);

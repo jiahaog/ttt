@@ -16,5 +16,7 @@ describe('MinMax', () => {
         assert.isTrue(isCorrect, 'The best move should be [1, 1]');
     });
 
-    it('Deeper')
+    it('Deeper', () => {
+
+    });
 });

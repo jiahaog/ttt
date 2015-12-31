@@ -31,7 +31,7 @@ function bestMove(grid, activePlayer) {
  * @param {boolean} [topLevel]
  * @returns {[] | int} best move to make if `topLevel` is true, or the best score
  */
-function minMax(grid, currentPlayer, activePlayer, topLevel=false) {
+function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
     //counter += 1;
     //if (counter > 10) {
     //    throw 'Too many!';
