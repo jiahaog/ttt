@@ -14,8 +14,11 @@ $ npm run build
 # watch and build es6 source files in `/src` to `/lib`
 $ npm run watch 
 
-# run compiled files, such as game etc.
+# run compiled files, etc.
 $ node lib/testRun.js
+
+# run cli game
+$ npm run game
 
 # tests
 $ npm test 

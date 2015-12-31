@@ -1,8 +1,8 @@
 import Player from './player';
 
 class PreconfiguredPlayer extends Player {
-    constructor(playerName, moveList) {
-        super(playerName);
+    constructor(playerNumber, playerName, moveList) {
+        super(playerNumber, playerName);
         this.moveList = moveList;
         this.moveCounter = -1;
     }

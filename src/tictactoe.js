@@ -1,6 +1,6 @@
 import Board from './board';
-import util from 'util';
-
+import helpers from './helpers';
+const prettyPrintGrid = helpers.prettyPrintGrid;
 
 class TicTacToe {
     /**
@@ -42,13 +42,5 @@ class TicTacToe {
     }
 }
 
-function prettyPrintGrid(grid) {
-    const gridString = JSON.stringify(grid);
-    const result = gridString
-        .replace(/],/g, ']\n') // split into multiple lines
-        .replace(/[\[|\]]/g, '') // remove all brackets
-        .replace(/,/g, '  '); // remove commas
-    console.log(result);
-}
 
 export default TicTacToe;

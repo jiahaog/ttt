@@ -10,8 +10,8 @@ const assert = chai.assert;
  * @param {int} expectedWinner
  */
 function testGame(player0Moves, player1Moves, expectedWinner) {
-    const player0 = new PreconfiguredPlayer('Player0', player0Moves);
-    const player1 = new PreconfiguredPlayer('Player1', player1Moves);
+    const player0 = new PreconfiguredPlayer(0, 'Player0', player0Moves);
+    const player1 = new PreconfiguredPlayer(1, 'Player1', player1Moves);
 
     const game = new TicTacToe(player0, player1);
     game.start(winner => {

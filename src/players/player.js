@@ -1,12 +1,12 @@
-import readLine from 'readline-sync';
-
 // interface for player
 class Player {
     /**
+     * @param {int} playerNumber
      * @param {string} [playerName]
      */
-    constructor(playerName) {
+    constructor(playerNumber, playerName) {
         this.playerName = playerName;
+        this.playerNumber = playerNumber;
     }
 
     /**

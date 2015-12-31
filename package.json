@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-register",
     "build": "babel src -d lib",
+    "game": "node lib/cliGame.js",
+    "test": "mocha --compilers js:babel-register",
     "watch": "babel --watch src -d lib"
   },
   "author": "",

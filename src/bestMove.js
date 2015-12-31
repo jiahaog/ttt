@@ -39,6 +39,7 @@ function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
     let gameStateScore = score(grid, activePlayer);
     if (gameStateScore !== 0) {
         // game over
+        //console.log('game over');
         return gameStateScore;
     }
 
@@ -51,7 +52,14 @@ function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
         return minMax(newGridState, nextPlayer, activePlayer);
     });
 
+    //console.log('Possible Moves', possibleMoves);
+    //console.log('Corresponding Scores', correspondingScores);
     let result;
+
+    if (correspondingScores.length === 0) {
+        return 0;
+    }
+
     if (currentPlayer === activePlayer) {
         result = Math.max(...correspondingScores);
     } else {
@@ -59,11 +67,9 @@ function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
     }
 
     if (topLevel) {
-        //console.log('Possible Moves', possibleMoves);
-        //console.log('Corresponding Scores', correspondingScores);
         const moveIndexToMake = correspondingScores.indexOf(result);
         const moveToMake = possibleMoves[moveIndexToMake];
-        console.log(`Move to make: ${moveToMake}`);
+        //console.log(`Move to make: ${moveToMake}`);
         return moveToMake;
     }
     return result;

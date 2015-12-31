@@ -1,9 +1,12 @@
+import readLine from 'readline-sync';
 import Player from './player';
+import helpers from './../helpers';
+const prettyPrintGrid = helpers.prettyPrintGrid;
 
 class HumanPlayer extends Player {
 
     getMove(gameGrid) {
-        console.log(gameGrid);
+        prettyPrintGrid(gameGrid);
         let userInput = readLine.question(`Player ${this.playerName} Enter your move x, y separated by a space:`);
         return userInput.split(/ +/);
     }

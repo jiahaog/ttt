@@ -46,7 +46,6 @@ class Board {
      * @param {[]} coordinates length 2 list of coordinates
      */
     _markPlayerMove(player, coordinates) {
-
         // check if valid player
         if (player === null || player === undefined) {
             throw 'Player is invalid';
