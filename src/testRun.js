@@ -1,5 +1,5 @@
 import TicTacToe from './tictactoe';
-import {HumanPlayer, PreconfiguredPlayer} from './players/player';
+import PreconfiguredPlayer from './players/preconfiguredPlayer';
 
 const player0 = new PreconfiguredPlayer('Player0', [
     [0, 0],
