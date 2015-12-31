@@ -1,4 +1,5 @@
 import checkWin from './checkWin';
+import helpers from './helpers';
 
 const BOARD_SIZE = 3;
 const DIMENSIONS = 2;
@@ -9,10 +10,7 @@ const emptyGrid = [
     [null, null, null]
 ];
 
-function deepCopy(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-
+const deepCopy = helpers.deepCopy;
 class Board {
     /**
      * @param {[[]]} [initGrid]
@@ -79,18 +77,6 @@ class Board {
     get gameGrid() {
         return deepCopy(this.grid);
     }
-
-    //getPossibleMoves() {
-    //
-    //    for (var j = 0; j < this.grid; j++) {
-    //        let row = this.grid[j];
-    //
-    //        for (var i = 0; i < row.length; i++) {
-    //            var point = row[i];
-    //            if (point)
-    //        }
-    //    }
-    //}
 }
 
 
