@@ -1,12 +1,12 @@
 import TicTacToe from './tictactoe';
-import {PlayerHuman, PlayerDumb} from './player';
+import {HumanPlayer, PreconfiguredPlayer} from './player';
 
-const player0 = new PlayerDumb('Player0', [
+const player0 = new PreconfiguredPlayer('Player0', [
     [0, 0],
     [1, 0],
     [2, 0]
 ]);
-const player1 = new PlayerDumb('Player1', [
+const player1 = new PreconfiguredPlayer('Player1', [
     [0, 2],
     [1, 2],
     [2, 2]

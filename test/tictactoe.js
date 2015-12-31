@@ -1,5 +1,5 @@
 import TicTacToe from './../src/tictactoe';
-import {PlayerDumb} from './../src/player';
+import {PreconfiguredPlayer} from './../src/player';
 import chai from 'chai';
 
 const assert = chai.assert;
@@ -10,8 +10,8 @@ const assert = chai.assert;
  * @param {int} expectedWinner
  */
 function testGame(player0Moves, player1Moves, expectedWinner) {
-    const player0 = new PlayerDumb('Player0', player0Moves);
-    const player1 = new PlayerDumb('Player1', player1Moves);
+    const player0 = new PreconfiguredPlayer('Player0', player0Moves);
+    const player1 = new PreconfiguredPlayer('Player1', player1Moves);
 
     const game = new TicTacToe(player0, player1);
     game.start(winner => {

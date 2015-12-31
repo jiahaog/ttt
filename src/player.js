@@ -15,7 +15,7 @@ class Player {
     getMove(gameGrid) {}
 }
 
-class PlayerHuman extends Player {
+class HumanPlayer extends Player {
 
     getMove(gameGrid) {
         console.log(gameGrid);
@@ -24,7 +24,7 @@ class PlayerHuman extends Player {
     }
 }
 
-class PlayerDumb extends Player {
+class PreconfiguredPlayer extends Player {
     constructor(playerName, moveList) {
         super(playerName);
         this.moveList = moveList;
@@ -43,4 +43,4 @@ class PlayerDumb extends Player {
     }
 }
 
-export {PlayerHuman, PlayerDumb};
+export {Player, HumanPlayer, PreconfiguredPlayer};

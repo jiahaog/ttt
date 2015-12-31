@@ -3,13 +3,22 @@ import checkWin from './checkWin';
 const BOARD_SIZE = 3;
 const DIMENSIONS = 2;
 
+const emptyGrid = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
+];
+
+function deepCopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
 class Board {
-    constructor() {
-        this.grid = [
-            [-1, -1, -1],  // -1 used to indicate empty
-            [-1, -1, -1],
-            [-1, -1, -1]
-        ];
+    /**
+     * @param {[[]]} [initGrid]
+     */
+    constructor(initGrid=emptyGrid) {
+        this.grid = deepCopy(initGrid);
         this.gameWinner = null;
     }
 
@@ -35,13 +44,13 @@ class Board {
     }
 
     /**
-     * @param {int} player > 1
+     * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
      */
     _markPlayerMove(player, coordinates) {
 
         // check if valid player
-        if (player < 0) {
+        if (player === null || player === undefined) {
             throw 'Player is invalid';
         }
 
@@ -59,7 +68,7 @@ class Board {
 
         // check position is empty
         const playerAtCoordinates = this.grid[coordinates[1]][coordinates[0]];
-        if (playerAtCoordinates > -1) {
+        if (playerAtCoordinates !== null) {
             throw 'Grid has already been occupied at point!'
         }
 
@@ -68,8 +77,21 @@ class Board {
     }
 
     get gameGrid() {
-        return JSON.parse(JSON.stringify(this.grid));
+        return deepCopy(this.grid);
     }
+
+    //getPossibleMoves() {
+    //
+    //    for (var j = 0; j < this.grid; j++) {
+    //        let row = this.grid[j];
+    //
+    //        for (var i = 0; i < row.length; i++) {
+    //            var point = row[i];
+    //            if (point)
+    //        }
+    //    }
+    //}
 }
+
 
 export default Board;

@@ -19,6 +19,7 @@ function checkWin(board) {
         _.each(winners, (value, winner) => {
             // only get one winner from the list
             // need to parse int because object keys is a string
+            console.log(winner);
             finalWinner = parseInt(winner);
         });
         return finalWinner;
@@ -47,7 +48,7 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
 
             }
 
-            if (current < 0) {
+            if (current === null) {
                 // skip zero valued position
                 continue;
             }
@@ -83,7 +84,7 @@ function checkDiagonals(selector, board, winners) {
             current = board[board.length - 1 - i][i];
         }
 
-        if (current < 0) {
+        if (current === null) {
             // skip zero valued position
             continue;
         }
