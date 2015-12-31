@@ -1,7 +1,7 @@
-import {Player} from './player';
+import Player from './player';
 
 
-class PerfectPlayer {
+class PerfectPlayer extends Player {
 
     /*
      * @param {[[]]} gameGrid A copied 2D array of the game grid

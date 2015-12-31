@@ -1,5 +1,5 @@
 import TicTacToe from './../src/tictactoe';
-import {PreconfiguredPlayer} from './../src/player';
+import PreconfiguredPlayer from './../src/preconfiguredPlayer';
 import chai from 'chai';
 
 const assert = chai.assert;
