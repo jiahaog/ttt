@@ -3,6 +3,9 @@
 
 # Node.js
 
+# ignore compiled lib files
+lib
+
 # Logs
 logs
 *.log
