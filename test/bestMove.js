@@ -1,14 +1,12 @@
 import bestMove from './../src/bestMove';
 import chai from 'chai';
-import _ from 'underscore';
 
 const assert = chai.assert;
 
 function checkBestMove(grid, activePlayer, correctMove) {
     const calculatedMove = bestMove(grid, activePlayer);
-    const isCorrect = _.isEqual(calculatedMove, correctMove);
-
-    assert.isTrue(isCorrect, `The best move should be ${correctMove.toString()}`);
+    console.log(calculatedMove, correctMove);
+    assert.deepEqual(calculatedMove, correctMove, `The best move should be ${correctMove.toString()}`);
 }
 
 describe('MinMax', () => {
@@ -28,5 +26,14 @@ describe('MinMax', () => {
             [null, null, null]
         ];
         checkBestMove(grid, 1, [0, 2]);
+    });
+    //
+    it('Will play till the end even if he will lose', () => {
+        const grid = [
+            [null, 1, null],
+            [null, null, 1],
+            [0, 0, 1]
+        ];
+        checkBestMove(grid, 1, [2, 0]);
     });
 });

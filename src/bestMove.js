@@ -17,10 +17,14 @@ function getPossibleMoves(grid) {
     return possibleMoves;
 }
 
-//let counter = 0;
-
+/**
+ * Wrapper to simplify first run of Minimax
+ * @param grid
+ * @param activePlayer
+ * @returns {*[]|int}
+ */
 function bestMove(grid, activePlayer) {
-    return minMax(grid, activePlayer, activePlayer, true);
+    return minMax(grid, activePlayer, activePlayer, 0, true);
 }
 
 /**
@@ -28,20 +32,18 @@ function bestMove(grid, activePlayer) {
  * @param {[[]]} grid
  * @param {int} currentPlayer Player for this recursion instance
  * @param {int} activePlayer Player who is trying to be smart
+ * @param {int} depth So that the algorithm is not fatalistic if it knows it will lose
  * @param {boolean} [topLevel]
  * @returns {[] | int} best move to make if `topLevel` is true, or the best score
  */
-function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
-    //counter += 1;
-    //if (counter > 10) {
-    //    throw 'Too many!';
-    //}
-    let gameStateScore = score(grid, activePlayer);
+function minMax(grid, currentPlayer, activePlayer, depth, topLevel = false) {
+    let gameStateScore = score(grid, activePlayer, depth);
     if (gameStateScore !== 0) {
         // game over
-        //console.log('game over');
         return gameStateScore;
     }
+
+    depth += 1;
 
     // game not over
 
@@ -49,7 +51,7 @@ function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
     const correspondingScores = possibleMoves.map((move) => {
         const newGridState = makeMove(grid, move, currentPlayer);
         const nextPlayer = getOtherPlayer(currentPlayer);
-        return minMax(newGridState, nextPlayer, activePlayer);
+        return minMax(newGridState, nextPlayer, activePlayer, depth);
     });
 
     //console.log('Possible Moves', possibleMoves);
@@ -68,9 +70,7 @@ function minMax(grid, currentPlayer, activePlayer, topLevel = false) {
 
     if (topLevel) {
         const moveIndexToMake = correspondingScores.indexOf(result);
-        const moveToMake = possibleMoves[moveIndexToMake];
-        //console.log(`Move to make: ${moveToMake}`);
-        return moveToMake;
+        return possibleMoves[moveIndexToMake];
     }
     return result;
 }
@@ -89,13 +89,13 @@ function makeMove(grid, move, player) {
     return copiedGrid;
 }
 
-function score(grid, activePlayer) {
+function score(grid, activePlayer, depth) {
     const winner = checkWin(grid);
     if (winner !== null) {
         if (winner === activePlayer) {
-            return 1;
+            return 10 - depth;
         } else {
-            return -1;
+            return -10 - depth;
         }
     } else {
         return 0;
