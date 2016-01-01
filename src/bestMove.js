@@ -24,7 +24,7 @@ function getPossibleMoves(grid) {
  * @returns {*[]|int}
  */
 function bestMove(grid, activePlayer) {
-    return minMax(grid, activePlayer, activePlayer, 0, true);
+    return minimax(grid, activePlayer, activePlayer, 0, true);
 }
 
 /**
@@ -36,7 +36,7 @@ function bestMove(grid, activePlayer) {
  * @param {boolean} [topLevel]
  * @returns {[] | int} best move to make if `topLevel` is true, or the best score
  */
-function minMax(grid, currentPlayer, activePlayer, depth, topLevel = false) {
+function minimax(grid, currentPlayer, activePlayer, depth, topLevel = false) {
     let gameStateScore = score(grid, activePlayer, depth);
     if (gameStateScore !== 0) {
         // game over
@@ -51,7 +51,7 @@ function minMax(grid, currentPlayer, activePlayer, depth, topLevel = false) {
     const correspondingScores = possibleMoves.map((move) => {
         const newGridState = makeMove(grid, move, currentPlayer);
         const nextPlayer = getOtherPlayer(currentPlayer);
-        return minMax(newGridState, nextPlayer, activePlayer, depth);
+        return minimax(newGridState, nextPlayer, activePlayer, depth);
     });
 
     //console.log('Possible Moves', possibleMoves);
