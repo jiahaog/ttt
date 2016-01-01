@@ -3,26 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Tic Tac Toe</title>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
   <link href="css/main.css" rel="stylesheet">
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 </head>
+
 <body>
-<div class="game-grid">
-  <h1>Tic Tac Toe!</h1>
-  <div class="game-row">
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+
+<div class="container">
+  <h3 class="center-align">Tic Tac Toe!</h3>
+  <div class="divider"></div>
+  <div class="row">
+    <div class="game-grid">
+      <div class="game-row">
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+      </div>
+      <div class="game-row">
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+      </div>
+      <div class="game-row">
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+        <div class="game-cell card hoverable"></div>
+      </div>
+    </div>
   </div>
-  <div class="game-row">
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
-  </div>
-  <div class="game-row">
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
-    <div class="game-cell"></div>
-  </div>
+
 </div>
 <script src="js/main.js"></script>
 </body>
