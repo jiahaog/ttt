@@ -5,7 +5,6 @@ const assert = chai.assert;
 
 function checkBestMove(grid, activePlayer, correctMove) {
     const calculatedMove = bestMove(grid, activePlayer);
-    console.log(calculatedMove, correctMove);
     assert.deepEqual(calculatedMove, correctMove, `The best move should be ${correctMove.toString()}`);
 }
 

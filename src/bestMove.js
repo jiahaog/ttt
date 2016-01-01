@@ -54,8 +54,6 @@ function minimax(grid, currentPlayer, activePlayer, depth, topLevel = false) {
         return minimax(newGridState, nextPlayer, activePlayer, depth);
     });
 
-    //console.log('Possible Moves', possibleMoves);
-    //console.log('Corresponding Scores', correspondingScores);
     let result;
 
     if (correspondingScores.length === 0) {
