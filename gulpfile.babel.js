@@ -8,6 +8,7 @@ import watchify from 'watchify';
 import babel from 'babelify';
 import runSequence from 'run-sequence';
 import mocha from 'gulp-mocha';
+import less from 'gulp-less';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -38,21 +39,27 @@ function compileJs(watch) {
 
 function watchJs() {
     return compileJs(true);
-};
+}
 
 gulp.task('test', () => {
-    return gulp.src('test/**/*.js', {read: false})
+    return gulp.src('./test/**/*.js', {read: false})
         // gulp-mocha needs filepaths so you can't have any plugins before it
         .pipe(mocha());
 });
 
-gulp.task('pages', () => {
-    return gulp.src('src/**/*.html')
-        .pipe(gulp.dest('dist/'));
-});
-
 gulp.task('js', ['test'], () => {
     return compileJs();
+});
+
+gulp.task('pages', () => {
+    return gulp.src('./src/**/*.html')
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('less', () => {
+    return gulp.src('./src/less/**/*.less')
+        .pipe(less())
+        .pipe(gulp.dest('./dist/css'));
 });
 
 gulp.task('clean', callback => {
