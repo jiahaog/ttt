@@ -1,4 +1,4 @@
-import checkWin from './../src/checkWin';
+import checkWin from './../src/js/game/board/checkWin';
 import chai from 'chai';
 
 let assert = chai.assert;

@@ -3,7 +3,7 @@ import Player from './player';
 import helpers from './../helpers';
 const prettyPrintGrid = helpers.prettyPrintGrid;
 
-class HumanPlayer extends Player {
+class cliPlayer extends Player {
 
     getMove(gameGrid) {
         prettyPrintGrid(gameGrid);
@@ -12,4 +12,4 @@ class HumanPlayer extends Player {
     }
 }
 
-export default HumanPlayer;
+export default cliPlayer;

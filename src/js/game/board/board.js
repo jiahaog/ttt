@@ -1,5 +1,5 @@
 import checkWin from './checkWin';
-import helpers from './helpers';
+import helpers from './../helpers';
 
 const BOARD_SIZE = 3;
 const DIMENSIONS = 2;

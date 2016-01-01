@@ -1,5 +1,5 @@
 import Board from './board';
-import helpers from './helpers';
+import helpers from './../helpers';
 const prettyPrintGrid = helpers.prettyPrintGrid;
 
 class TicTacToe {

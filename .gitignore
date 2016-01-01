@@ -5,6 +5,7 @@
 
 # ignore compiled lib files
 lib
+dist
 
 # Logs
 logs

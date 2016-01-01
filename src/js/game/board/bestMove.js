@@ -1,5 +1,5 @@
 import checkWin from './checkWin';
-import helpers from './helpers';
+import helpers from './../helpers';
 const deepCopy = helpers.deepCopy;
 
 function getPossibleMoves(grid) {

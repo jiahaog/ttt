@@ -1,4 +1,4 @@
-import bestMove from './../src/bestMove';
+import bestMove from './../src/js/game/board/bestMove';
 import chai from 'chai';
 
 const assert = chai.assert;

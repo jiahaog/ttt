@@ -1,4 +1,4 @@
-import Board from './../src/board';
+import Board from './../src/js/game/board/board';
 
 
 describe('Tic-Tac-Toe Board', () => {

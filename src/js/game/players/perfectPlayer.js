@@ -1,5 +1,5 @@
 import Player from './player';
-import bestMove from './../bestMove';
+import bestMove from './../board/bestMove';
 
 class PerfectPlayer extends Player {
     /*
