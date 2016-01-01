@@ -16,6 +16,7 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-register": "^6.3.13",
     "babelify": "^7.2.0",
+    "browser-sync": "^2.10.1",
     "browserify": "^12.0.1",
     "chai": "^3.4.1",
     "del": "^2.2.0",

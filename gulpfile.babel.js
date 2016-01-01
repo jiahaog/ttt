@@ -9,6 +9,7 @@ import babel from 'babelify';
 import runSequence from 'run-sequence';
 import mocha from 'gulp-mocha';
 import less from 'gulp-less';
+import browserSync from 'browser-sync';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -23,7 +24,10 @@ function compileJs(watch) {
             .pipe(buffer())
             .pipe(sourcemaps.init({loadMaps: true}))
             .pipe(sourcemaps.write('./'))
-            .pipe(gulp.dest('./dist/js'));
+            .pipe(gulp.dest('./dist/js'))
+            .pipe(browserSync.reload({
+                stream: true
+            }));
     }
 
     if (watch) {
@@ -53,13 +57,19 @@ gulp.task('js', ['test'], () => {
 
 gulp.task('pages', () => {
     return gulp.src('./src/**/*.html')
-        .pipe(gulp.dest('./dist/'));
+        .pipe(gulp.dest('./dist/'))
+        //.pipe(browserSync.reload({
+        //    stream: true
+        //}));
 });
 
 gulp.task('less', () => {
     return gulp.src('./src/less/**/*.less')
         .pipe(less())
-        .pipe(gulp.dest('./dist/css'));
+        .pipe(gulp.dest('./dist/css'))
+        .pipe(browserSync.reload({
+            stream: true
+        }));
 });
 
 gulp.task('clean', callback => {
@@ -72,8 +82,19 @@ gulp.task('build', callback => {
     runSequence('clean', ['pages', 'js'], callback);
 });
 
-gulp.task('watch', ['test', 'pages'], () => {
-    return watchJs();
+gulp.task('browserSync', () => {
+    browserSync({
+        server: {
+            baseDir: 'dist'
+        },
+        browser: "google chrome"
+    })
+});
+
+gulp.task('watch', ['browserSync', 'test', 'pages'], () => {
+    watchJs();
+    gulp.watch('src/less/**/*.less', ['less']);
+    gulp.watch('src/**/*.html', ['pages']).on('change', browserSync.reload);
 });
 
 gulp.task('default', ['watch']);
