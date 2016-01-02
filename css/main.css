@@ -3,8 +3,6 @@
   height: 100px;
   margin: 10px;
 }
-
-
 .game-grid {
   margin-top: 100px;
   margin-bottom: 100px;
@@ -13,12 +11,10 @@
   flex-direction: column;
   align-items: center;
 }
-
 .game-row {
   display: flex;
   flex-direction: row;
 }
-
 .game-cell-label {
   width: 100%;
   font-size: 20px;
