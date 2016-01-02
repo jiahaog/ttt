@@ -98,7 +98,8 @@ gulp.task('watch', ['browserSync', 'less', 'test', 'pages'], () => {
     gulp.watch('src/**/*.html', ['pages']).on('change', browserSync.reload);
 });
 
-gulp.task('deploy', ['build'], function() {
+gulp.task('deploy', () => {
+    // todo figure out bug why can't I do deploy with ['build'] as a prerequisite
     return gulp.src('./dist/**/*')
         .pipe(ghPages());
 });
