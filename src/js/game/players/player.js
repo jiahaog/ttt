@@ -32,9 +32,9 @@ class Player {
         }
     }
 
-    notifyGameOver(winner) {
+    notifyGameOver(winner, winnerName) {
         if (this.gameOverCallback) {
-            this.gameOverCallback(winner);
+            this.gameOverCallback(winner, winnerName);
         }
     }
 

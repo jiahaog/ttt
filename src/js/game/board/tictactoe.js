@@ -59,13 +59,7 @@ class TicTacToe {
             this.gameOver = true;
 
             if (this.winnerCallback) {
-                let winnerName;
-                if (winner === 'draw') {
-                    winnerName = winner;
-                } else {
-                    winnerName = this.players[winner].playerName;
-                }
-
+                const winnerName = this.getWinnerName(winner);
                 this.winnerCallback(winner, winnerName);
             }
         }
@@ -76,7 +70,8 @@ class TicTacToe {
         this.players.forEach(player => {
             player.notifyBoardChanged(this.board.gameGrid);
             if (winnerExists(winner)) {
-                player.notifyGameOver(winner);
+                const winnerName = this.getWinnerName(winner);
+                player.notifyGameOver(winner, winnerName);
             }
         });
 
@@ -86,6 +81,16 @@ class TicTacToe {
         // don't put this in forEach loop because of concurrency issue
         // where next turn is executed before the forEach completes
         this.players[this.currentPlayerTurn].notifyTurn(this.board.gameGrid);
+    }
+
+    getWinnerName(winner) {
+        let winnerName;
+        if (winner === 'draw') {
+            winnerName = winner;
+        } else {
+            winnerName = this.players[winner].playerName;
+        }
+        return winnerName;
     }
 }
 

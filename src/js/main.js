@@ -25,7 +25,6 @@ let GameGrid = React.createClass({
         });
 
         this.state.player.makeMove(cellCoordinates);
-
     },
     choosePlayer: function (event) {
         const playerChosen = parseInt(event.target.dataset.player);
@@ -48,17 +47,17 @@ let GameGrid = React.createClass({
             });
         });
 
-        clientPlayer.onGameOver(winner => {
-            console.log('Game over! Winner:', winner);
+        clientPlayer.onGameOver((winner, winnerName) => {
+            this.setState({
+                winnerName: winnerName
+            });
         });
 
         if (playerChosen === 1) {
             // start second
             game.registerPlayers(aiPlayer, clientPlayer);
-            console.log('You start second');
         } else {
             game.registerPlayers(clientPlayer, aiPlayer);
-            console.log('You start first')
         }
 
         game.newGame();
@@ -67,6 +66,22 @@ let GameGrid = React.createClass({
             gameStarted: true,
             player: clientPlayer
         });
+    },
+    winnerText: function () {
+        let winnerName = this.state.winnerName;
+        if (!winnerName) {
+            return;
+        }
+
+        if (winnerName === 'draw') {
+            return <div>
+                It's a draw!
+            </div>
+        } else {
+            return <div>
+                {winnerName} wins!
+            </div>
+        }
     },
     render: function () {
         if (!this.state.gameStarted) {
@@ -80,6 +95,7 @@ let GameGrid = React.createClass({
             {generateGameGrid(this.state.gameGrid, this)}
             <div>{this.state.currentPlayer}</div>
             <div>{this.state.playerChosen}</div>
+            {this.winnerText()}
         </div>;
     }
 });
