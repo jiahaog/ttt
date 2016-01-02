@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import chai from 'chai';
+import async from 'async';
 
 import TicTacToe from './../src/js/game/board/tictactoe';
 import TestPlayer from '../src/js/game/players/testPlayer';
@@ -25,7 +26,7 @@ function testGame(player0Moves, player1Moves, expectedWinner) {
     });
 }
 
-function randomVsAiGame() {
+function randomVsAiGame(callback) {
     const game = new TicTacToe();
 
     const aiName = 'perfectPlayer';
@@ -38,7 +39,13 @@ function randomVsAiGame() {
 
     game.newGame((winner, winnerName) => {
         const aiWinsOrDraws = winnerName === aiName || winner === 'draw';
-        assert.isTrue(aiWinsOrDraws, 'AI should always win or draw');
+
+        if (!aiWinsOrDraws) {
+            callback(`AI did not win, Winner: ${winnerName}`);
+            return;
+        }
+
+        callback();
     });
 }
 
@@ -73,11 +80,18 @@ describe('TicTacToe Tests', function () {
             );
         });
 
-        it('AI always draws or wins', () => {
+        it('AI always draws or wins', function (done) {
             const GAMES_TO_SIMULATE = 5;
+            let toSimulate = [];
             for (let counter = 0; counter < GAMES_TO_SIMULATE; counter++) {
-                randomVsAiGame();
+                toSimulate.push(randomVsAiGame);
             }
+
+            async.each(toSimulate, function(game, callback) {
+                game(callback);
+            }, function(error){
+                done(error);
+            });
         })
     });
 });
