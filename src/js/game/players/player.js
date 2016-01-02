@@ -3,17 +3,52 @@ class Player {
     /**
      * @param {int} playerNumber
      * @param {string} [playerName]
+     * @param {TicTacToe} game
      */
-    constructor(playerNumber, playerName) {
+    constructor(playerNumber, playerName, game) {
         this.playerName = playerName;
         this.playerNumber = playerNumber;
+        this.game = game;
     }
 
-    /**
-     *
-     * @param {[[]]} gameGrid A copied 2D array of the game grid
-     */
-    getMove(gameGrid) {
+    // functions called by board, don't touch
+
+    notifyBoardChanged(grid) {
+        if (this.boardChangedCallback) {
+            this.boardChangedCallback(grid);
+        }
+    }
+
+    notifyTurn() {
+        if (this.myTurnCallback) {
+            this.myTurnCallback();
+        }
+    }
+
+    notifyGameOver(winner) {
+        if (this.gameOverCallback) {
+            this.gameOverCallback(winner);
+        }
+    }
+
+    // register callbacks here
+
+    onBoardChange(callback) {
+        this.boardChangedCallback = callback;
+    }
+
+    onMyTurn(callback) {
+        this.myTurnCallback = callback;
+    }
+
+    onGameOver(callback) {
+        this.gameOverCallback = callback;
+    }
+
+    // actions
+
+    makeMove(moveCoordinates) {
+        this.game.makeMove(this.playerNumber, moveCoordinates);
     }
 }
 

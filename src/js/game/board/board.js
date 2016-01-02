@@ -1,6 +1,8 @@
 import checkWin from './checkWin';
 import helpers from './../helpers';
 
+const deepCopy = helpers.deepCopy;
+
 const BOARD_SIZE = 3;
 const DIMENSIONS = 2;
 
@@ -10,7 +12,6 @@ const emptyGrid = [
     [null, null, null]
 ];
 
-const deepCopy = helpers.deepCopy;
 class Board {
     /**
      * @param {[[]]} [initGrid]
@@ -18,13 +19,14 @@ class Board {
     constructor(initGrid = emptyGrid) {
         this.grid = deepCopy(initGrid);
         this.gameWinner = null;
+        this.moveCount = 0;
     }
 
     /**
      *
-     * @param {int} player > 1
+     * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
-     * @returns {number|null} the winning player or null
+     * @returns {number|null|string} the winning player or null or 'draw' if draw
      */
     makeMove(player, coordinates) {
         if (this.gameWinner) {
@@ -32,18 +34,25 @@ class Board {
         }
         // valid move
         if (this._markPlayerMove(player, coordinates)) {
+            this.moveCount += 1;
             let winner = checkWin(this.grid);
             // need to check for null because a winning player can be int value 0
             if (winner !== null) {
                 this.gameWinner = winner;
             }
-            return winner;
+
+            if (this.moveCount === BOARD_SIZE*BOARD_SIZE) {
+                this.gameWinner = 'draw'; // todo might have problems with string token used
+            }
+
+            return this.gameWinner;
         }
     }
 
     /**
      * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
+     * @returns {boolean} true if valid move
      */
     _markPlayerMove(player, coordinates) {
         // check if valid player
@@ -77,6 +86,5 @@ class Board {
         return deepCopy(this.grid);
     }
 }
-
 
 export default Board;
