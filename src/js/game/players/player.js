@@ -1,17 +1,24 @@
 // interface for player
 class Player {
     /**
-     * @param {int} playerNumber
+
      * @param {string} [playerName]
      * @param {TicTacToe} game
      */
-    constructor(playerNumber, playerName, game) {
+    constructor(game, playerName) {
         this.playerName = playerName;
-        this.playerNumber = playerNumber;
         this.game = game;
     }
 
     // functions called by board, don't touch
+
+    /**
+     * Called on register player by Board
+     * @param {int} playerNumber
+     */
+    setPlayerNumber(playerNumber) {
+        this.playerNumber = playerNumber;
+    }
 
     notifyBoardChanged(grid) {
         if (this.boardChangedCallback) {

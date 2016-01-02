@@ -7,11 +7,16 @@ class TicTacToe {
 
     registerPlayers(player0, player1) {
         this.players = [player0, player1];
+        // set player numbers
+        this.players.forEach((player, index) => {
+            player.setPlayerNumber(index);
+        });
     }
 
     /**
      * @callback winnerCallback
-     * @param {int|string} winner
+     * @param {int|string} winner index of winning player or 'draw'
+     * @param {string} winnerName name of winning player or 'draw'
      */
 
     /**
@@ -54,7 +59,14 @@ class TicTacToe {
             this.gameOver = true;
 
             if (this.winnerCallback) {
-                this.winnerCallback(winner);
+                let winnerName;
+                if (winner === 'draw') {
+                    winnerName = winner;
+                } else {
+                    winnerName = this.players[winner].playerName;
+                }
+
+                this.winnerCallback(winner, winnerName);
             }
         }
     }

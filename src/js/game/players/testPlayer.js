@@ -4,8 +4,8 @@ import Player from './player';
  * Player who has a defined set of moves to take in order
  */
 class TestPlayer extends Player {
-    constructor(playerNumber, playerName, game, moveList) {
-        super(playerNumber, playerName, game);
+    constructor(game, playerName, moveList) {
+        super(game, playerName);
         this.moveList = moveList;
 
         this.onMyTurn(() => {

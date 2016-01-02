@@ -1,21 +1,7 @@
 import checkWin from './checkWin';
 import helpers from './../helpers';
 const deepCopy = helpers.deepCopy;
-
-function getPossibleMoves(grid) {
-    const possibleMoves = [];
-    for (var j = 0; j < grid.length; j++) {
-        let row = grid[j];
-
-        for (var i = 0; i < row.length; i++) {
-            var point = row[i];
-            if (point === null) {
-                possibleMoves.push([i, j]);
-            }
-        }
-    }
-    return possibleMoves;
-}
+const getPossibleMoves = helpers.getPossibleMoves;
 
 /**
  * Wrapper to simplify first run of Minimax

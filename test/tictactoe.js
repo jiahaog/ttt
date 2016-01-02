@@ -1,6 +1,10 @@
+import _ from 'underscore';
+import chai from 'chai';
+
 import TicTacToe from './../src/js/game/board/tictactoe';
 import TestPlayer from '../src/js/game/players/testPlayer';
-import chai from 'chai';
+import RandomPlayer from '../src/js/game/players/randomPlayer';
+import PerfectPlayer from '../src/js/game/players/perfectPlayer';
 
 const assert = chai.assert;
 
@@ -12,12 +16,29 @@ const assert = chai.assert;
 function testGame(player0Moves, player1Moves, expectedWinner) {
     const game = new TicTacToe();
 
-    const player0 = new TestPlayer(0, 'Player0', game, player0Moves);
-    const player1 = new TestPlayer(1, 'Player1', game, player1Moves);
+    const player0 = new TestPlayer(game, 'Player0', player0Moves);
+    const player1 = new TestPlayer(game, 'Player1', player1Moves);
 
     game.registerPlayers(player0, player1);
     game.newGame(winner => {
         assert.strictEqual(winner, expectedWinner, `Player ${expectedWinner} should win`);
+    });
+}
+
+function randomVsAiGame() {
+    const game = new TicTacToe();
+
+    const aiName = 'perfectPlayer';
+    const player0 = new RandomPlayer(game, 'Player0');
+    const player1 = new PerfectPlayer(game, aiName);
+
+    const playerRandomized = _.shuffle([player0, player1]);
+
+    game.registerPlayers(...playerRandomized);
+
+    game.newGame((winner, winnerName) => {
+        const aiWinsOrDraws = winnerName === aiName || winner === 'draw';
+        assert.isTrue(aiWinsOrDraws, 'AI should always win or draw');
     });
 }
 
@@ -51,5 +72,12 @@ describe('TicTacToe Tests', function () {
                 ], 1
             );
         });
+
+        it('AI always draws or wins', () => {
+            const GAMES_TO_SIMULATE = 5;
+            for (let counter = 0; counter < GAMES_TO_SIMULATE; counter++) {
+                randomVsAiGame();
+            }
+        })
     });
 });

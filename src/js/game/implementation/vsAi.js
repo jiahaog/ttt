@@ -4,8 +4,8 @@ import PerfectPlayer from '../players/perfectPlayer';
 
 const game = new TicTacToe();
 
-const player0 = new CliPlayer(0, 'Player0', game);
-const aiPlayer = new PerfectPlayer(1, 'AI-Player', game);
+const player0 = new CliPlayer(game, 'Player0');
+const aiPlayer = new PerfectPlayer(game, 'AI-Player');
 
 game.registerPlayers(player0, aiPlayer);
 game.newGame();

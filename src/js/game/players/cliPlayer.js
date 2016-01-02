@@ -5,14 +5,8 @@ const prettyPrintGrid = helpers.prettyPrintGrid;
 
 class cliPlayer extends Player {
 
-    /**
-     *
-     * @param playerNumber
-     * @param playerName
-     * @param game
-     */
-    constructor(playerNumber, playerName, game) {
-        super(playerNumber, playerName, game);
+    constructor(...params) {
+        super(...params);
 
         this.onBoardChange(grid => {
             prettyPrintGrid(grid);
