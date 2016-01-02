@@ -1,5 +1,7 @@
 # Tic-Tac-Toe
 
+![build status](https://travis-ci.org/jiahaog/tictactoe.svg)
+
 A Tic-Tac-Toe game with React and an unbeatable AI.
 
 ## Introduction
