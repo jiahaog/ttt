@@ -81,7 +81,7 @@ describe('TicTacToe Tests', function () {
         });
 
         it('AI always draws or wins', function (done) {
-            const GAMES_TO_SIMULATE = 5;
+            const GAMES_TO_SIMULATE = 1;
             let toSimulate = [];
             for (let counter = 0; counter < GAMES_TO_SIMULATE; counter++) {
                 toSimulate.push(randomVsAiGame);
