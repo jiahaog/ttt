@@ -1,30 +1,86 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import api from './game/index.js';
+import gameApi from './game/index.js';
+const PerfectPlayer = gameApi.players.PerfectPlayer;
+const Player = gameApi.players.Player;
 
-let game = new api.TicTacToe();
-console.log('game created');
 
 let GameGrid = React.createClass({
     getInitialState: function () {
         return {
-            ready: true,
-            yourTurn: true
+            gameStarted: false
         }
     },
     cellClicked: function (event) {
+        if (this.state.gridDisabled) {
+            return;
+        }
+
         const cellId = event.target.id;
         const cellCoordinates = parseGameCellId(cellId);
-        console.log(cellCoordinates)
+
+        this.setState({
+            gridDisabled: true
+        });
+
+        this.state.player.makeMove(cellCoordinates);
+
+    },
+    choosePlayer: function (event) {
+        const playerChosen = parseInt(event.target.dataset.player);
+
+        const game = new gameApi.TicTacToe();
+
+        const aiPlayer = new PerfectPlayer(game, 'AI-Player');
+
+
+        const clientPlayer = new Player(game, 'You');
+        clientPlayer.onBoardChange(grid => {
+            this.setState({
+                gameGrid: grid
+            });
+        });
+
+        clientPlayer.onMyTurn(() => {
+            this.setState({
+                gridDisabled: false
+            });
+        });
+
+        clientPlayer.onGameOver(winner => {
+            console.log('Game over! Winner:', winner);
+        });
+
+        if (playerChosen === 1) {
+            // start second
+            game.registerPlayers(aiPlayer, clientPlayer);
+            console.log('You start second');
+        } else {
+            game.registerPlayers(clientPlayer, aiPlayer);
+            console.log('You start first')
+        }
+
+        game.newGame();
+
+        this.setState({
+            gameStarted: true,
+            player: clientPlayer
+        });
     },
     render: function () {
-        const grid = [
-            [null, 1, null],
-            [null, null, 1],
-            [0, 0, 1]
-        ];
-        return generateGameGrid(grid, this);
+        if (!this.state.gameStarted) {
+            return <div>
+                <a className="waves-effect waves-light btn" data-player="0" onClick={this.choosePlayer}>Start First</a>
+                <a className="waves-effect waves-light btn" data-player="1" onClick={this.choosePlayer}>Start Second</a>
+            </div>
+        }
+
+        return <div>
+            {generateGameGrid(this.state.gameGrid, this)}
+            <div>{this.state.currentPlayer}</div>
+            <div>{this.state.playerChosen}</div>
+        </div>;
     }
 });
 
