@@ -79,7 +79,7 @@ gulp.task('clean', callback => {
 });
 
 gulp.task('build', callback => {
-    runSequence('clean', ['pages', 'js'], callback);
+    runSequence('clean', ['less', 'pages', 'js'], callback);
 });
 
 gulp.task('browserSync', () => {
@@ -91,7 +91,7 @@ gulp.task('browserSync', () => {
     })
 });
 
-gulp.task('watch', ['browserSync', 'test', 'pages'], () => {
+gulp.task('watch', ['browserSync', 'less', 'test', 'pages'], () => {
     watchJs();
     gulp.watch('src/less/**/*.less', ['less']);
     gulp.watch('src/**/*.html', ['pages']).on('change', browserSync.reload);
