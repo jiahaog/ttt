@@ -73,7 +73,7 @@ class TicTacToe {
         }
         // don't put this in forEach loop because of concurrency issue
         // where next turn is executed before the forEach completes
-        this.players[this.currentPlayerTurn].notifyTurn();
+        this.players[this.currentPlayerTurn].notifyTurn(this.board.gameGrid);
     }
 }
 

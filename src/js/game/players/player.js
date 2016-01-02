@@ -19,9 +19,9 @@ class Player {
         }
     }
 
-    notifyTurn() {
+    notifyTurn(grid) {
         if (this.myTurnCallback) {
-            this.myTurnCallback();
+            this.myTurnCallback(grid);
         }
     }
 
