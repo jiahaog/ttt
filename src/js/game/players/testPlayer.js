@@ -8,9 +8,7 @@ class TestPlayer extends Player {
         super(playerNumber, playerName, game);
         this.moveList = moveList;
 
-        this.turnCounter = 0;
         this.onMyTurn(() => {
-            this.turnCounter += 1;
             const moveCoords = this.moveList.shift();
             if (!moveCoords) {
                 console.error(`${this.playerName}: No more moves!`);

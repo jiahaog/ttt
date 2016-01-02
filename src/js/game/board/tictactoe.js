@@ -11,7 +11,7 @@ class TicTacToe {
 
     /**
      * @callback winnerCallback
-     * @param winner
+     * @param {int|string} winner
      */
 
     /**
@@ -50,7 +50,7 @@ class TicTacToe {
         this.currentTurn += 1;
         this._notifyPlayers(winner);
 
-        if (winner != null && winner !== undefined) {
+        if (winnerExists(winner)) {
             this.gameOver = true;
 
             if (this.winnerCallback) {
@@ -61,18 +61,29 @@ class TicTacToe {
 
     _notifyPlayers(winner) {
 
-        this.players.forEach((player, index) => {
+        this.players.forEach(player => {
             player.notifyBoardChanged(this.board.gameGrid);
-            if (winner !== null && winner !== undefined) {
+            if (winnerExists(winner)) {
                 player.notifyGameOver(winner);
             }
         });
 
-        if (winner !== null && winner !== undefined) {
+        if (winnerExists(winner)) {
             return
         }
+        // don't put this in forEach loop because of concurrency issue
+        // where next turn is executed before the forEach completes
         this.players[this.currentPlayerTurn].notifyTurn();
     }
+}
+
+/**
+ * Helper function to check if there is a winner
+ * @param {int|string|null|undefined} winner
+ */
+function winnerExists(winner) {
+    // need this because winner can be 0 valued int
+    return winner !== null && winner !== undefined;
 }
 
 export default TicTacToe;
