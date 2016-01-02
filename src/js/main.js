@@ -26,15 +26,18 @@ let GameGrid = React.createClass({
 
         this.state.player.makeMove(cellCoordinates);
     },
+    newGame: function (event) {
+        this.setState({
+            gameStarted: false
+        });
+    },
     choosePlayer: function (event) {
         const playerChosen = parseInt(event.target.dataset.player);
 
         const game = new gameApi.TicTacToe();
-
         const aiPlayer = new PerfectPlayer(game, 'AI-Player');
-
-
         const clientPlayer = new Player(game, 'You');
+
         clientPlayer.onBoardChange(grid => {
             this.setState({
                 gameGrid: grid
@@ -96,6 +99,7 @@ let GameGrid = React.createClass({
             <div>{this.state.currentPlayer}</div>
             <div>{this.state.playerChosen}</div>
             {this.winnerText()}
+            <a className="waves-effect waves-light btn" onClick={this.newGame}>New Game</a>
         </div>;
     }
 });
