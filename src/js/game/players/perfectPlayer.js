@@ -2,9 +2,14 @@ import Player from './player';
 import bestMove from './../board/bestMove';
 
 class PerfectPlayer extends Player {
-    /*
-     * @param {[[]]} gameGrid A copied 2D array of the game grid
-     */
+    constructor(...params) {
+        super(...params);
+        this.onMyTurn(gameGrid => {
+            const perfectMove = this.getMove(gameGrid);
+            this.makeMove(perfectMove);
+        });
+    }
+
     getMove(gameGrid) {
         return bestMove(gameGrid, this.playerNumber)
     }
