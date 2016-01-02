@@ -9,7 +9,16 @@ class TicTacToe {
         this.players = [player0, player1];
     }
 
-    newGame() {
+    /**
+     * @callback winnerCallback
+     * @param winner
+     */
+
+    /**
+     * @param {winnerCallback} [callback] called when game is won. If left empty,
+     *                                    the previously saved callback will be called
+     */
+    newGame(callback) {
         if (this.players.length !== 2) {
             console.error('Need to have 2 players registered');
             return;
@@ -17,7 +26,9 @@ class TicTacToe {
         this.board = new Board();
         this.currentTurn = 0;
         this.gameOver = false;
-
+        if (callback) {
+            this.winnerCallback = callback;
+        }
         this._notifyPlayers();
     }
 
@@ -41,21 +52,26 @@ class TicTacToe {
 
         if (winner != null && winner !== undefined) {
             this.gameOver = true;
+
+            if (this.winnerCallback) {
+                this.winnerCallback(winner);
+            }
         }
     }
 
     _notifyPlayers(winner) {
+
         this.players.forEach((player, index) => {
             player.notifyBoardChanged(this.board.gameGrid);
             if (winner !== null && winner !== undefined) {
                 player.notifyGameOver(winner);
-                return;
-            }
-
-            if (index === this.currentPlayerTurn) {
-                player.notifyTurn();
             }
         });
+
+        if (winner !== null && winner !== undefined) {
+            return
+        }
+        this.players[this.currentPlayerTurn].notifyTurn();
     }
 }
 

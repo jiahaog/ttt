@@ -1,5 +1,5 @@
 import TicTacToe from './../src/js/game/board/tictactoe';
-import PreconfiguredPlayer from '../src/js/game/players/preconfiguredPlayer';
+import TestPlayer from '../src/js/game/players/testPlayer';
 import chai from 'chai';
 
 const assert = chai.assert;
@@ -10,18 +10,21 @@ const assert = chai.assert;
  * @param {int} expectedWinner
  */
 function testGame(player0Moves, player1Moves, expectedWinner) {
-    const player0 = new PreconfiguredPlayer(0, 'Player0', player0Moves);
-    const player1 = new PreconfiguredPlayer(1, 'Player1', player1Moves);
+    const game = new TicTacToe();
 
-    const game = new TicTacToe(player0, player1);
-    game.start(winner => {
+    const player0 = new TestPlayer(0, 'Player0', game, player0Moves);
+    const player1 = new TestPlayer(1, 'Player1', game, player1Moves);
+
+    game.registerPlayers(player0, player1);
+    game.newGame(winner => {
         assert.strictEqual(winner, expectedWinner, `Player ${expectedWinner} should win`);
     });
 }
 
-describe('TicTacToe Tests', () => {
-    describe('Preset Player Tests', () => {
-        it('Player0 can win', () => {
+describe('TicTacToe Tests', function () {
+    this.timeout(20000);
+    describe('Preset Player Tests', function () {
+        it('Player0 can win', function() {
             testGame(
                 [
                     [0, 0],

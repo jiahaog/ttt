@@ -3,7 +3,6 @@ import CliPlayer from '../players/cliPlayer';
 
 const game = new TicTacToe();
 
-
 const player0 = new CliPlayer(0, 'Player0', game);
 const player1 = new CliPlayer(1, 'Player1', game);
 
