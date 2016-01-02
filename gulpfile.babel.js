@@ -10,6 +10,7 @@ import runSequence from 'run-sequence';
 import mocha from 'gulp-mocha';
 import less from 'gulp-less';
 import browserSync from 'browser-sync';
+import ghPages from 'gulp-gh-pages';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -95,6 +96,11 @@ gulp.task('watch', ['browserSync', 'less', 'test', 'pages'], () => {
     watchJs();
     gulp.watch('src/less/**/*.less', ['less']);
     gulp.watch('src/**/*.html', ['pages']).on('change', browserSync.reload);
+});
+
+gulp.task('deploy', ['build'], function() {
+    return gulp.src('./dist/**/*')
+        .pipe(ghPages());
 });
 
 gulp.task('default', ['watch']);
