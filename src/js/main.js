@@ -19,8 +19,6 @@ const newGameReactState = {
     winnerName: null
 };
 
-
-
 let GameGrid = React.createClass({
     getInitialState: function () {
         return _.clone(newGameReactState);
@@ -82,11 +80,12 @@ let GameGrid = React.createClass({
             player: clientPlayer
         });
     },
-    winnerText: function () {
-        let winnerName = this.state.winnerName;
-        if (!winnerName) {
+    maybeShowWinnerText: function () {
+        if (this.state.gameState !== gameStates.GAME_OVER) {
             return;
         }
+
+        let winnerName = this.state.winnerName;
 
         if (winnerName === 'draw') {
             return <div>
@@ -118,9 +117,7 @@ let GameGrid = React.createClass({
         return <div>
             {generateGameGrid(this.state.gameGrid, this)}
             {this.maybeShowLoader()}
-            <div>{this.state.currentPlayer}</div>
-            <div>{this.state.playerChosen}</div>
-            {this.winnerText()}
+            {this.maybeShowWinnerText()}
             <a className="waves-effect waves-light btn" onClick={this.newGame}>New Game</a>
         </div>;
     }
