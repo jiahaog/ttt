@@ -15,6 +15,7 @@ function checkBestMove(grid, activePlayer, correctMove, done) {
 }
 
 describe('MinMax', function () {
+    this.timeout(10000);
     it('Will know how to win', function (done) {
         const grid = [
             [0, null, 1],

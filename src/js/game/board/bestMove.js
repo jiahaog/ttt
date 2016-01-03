@@ -3,7 +3,9 @@ import _ from 'underscore';
 import checkWin from './checkWin';
 import helpers from './../helpers';
 const deepCopy = helpers.deepCopy;
+const getCornerFromGrid = helpers.getCornerFromGrid;
 const getPossibleMoves = helpers.getPossibleMoves;
+const isGridEmpty = helpers.isGridEmpty;
 
 /**
  * @callback bestMoveCallback
@@ -20,7 +22,15 @@ const getPossibleMoves = helpers.getPossibleMoves;
 function bestMove(grid, activePlayer, callback) {
     _.defer(() => {
         try {
-            const best = minimax(grid, activePlayer, activePlayer, 0, true);
+            let best;
+            if (isGridEmpty(grid)) {
+                // save computation and simply return a corner
+                best = getCornerFromGrid(grid);
+                console.log(best);
+            } else {
+                best = minimax(grid, activePlayer, activePlayer, 0, true);
+            }
+
             callback(null, best);
         } catch (error) {
             callback(error);

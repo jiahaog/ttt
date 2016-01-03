@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function deepCopy(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
@@ -26,9 +28,35 @@ function getPossibleMoves(grid) {
     return possibleMoves;
 }
 
+function isGridEmpty(grid) {
+    return !grid.some(row => {
+        return row.some(cell => {
+            return cell !== null;
+        });
+    });
+}
+
+function getCornerFromGrid(grid) {
+    // grid assumed to be square
+    return getCornerCoordinates(grid.length);
+}
+
+function getCornerCoordinates(length) {
+    let corners = [
+        [0, 0],
+        [length - 1, 0],
+        [length -1, length - 1],
+        [0, length - 1]
+    ];
+
+    return _.sample(corners);
+}
+
 const api = {
     deepCopy: deepCopy,
+    getCornerFromGrid: getCornerFromGrid,
     getPossibleMoves: getPossibleMoves,
+    isGridEmpty: isGridEmpty,
     prettyPrintGrid: prettyPrintGrid
 };
 
