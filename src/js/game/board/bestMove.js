@@ -26,7 +26,6 @@ function bestMove(grid, activePlayer, callback) {
             if (isGridEmpty(grid)) {
                 // save computation and simply return a corner
                 best = getCornerFromGrid(grid);
-                console.log(best);
             } else {
                 best = minimax(grid, activePlayer, activePlayer, 0, true);
             }
