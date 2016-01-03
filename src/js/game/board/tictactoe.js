@@ -32,9 +32,9 @@ class TicTacToe {
         this.currentTurn = 0;
         this.gameOver = false;
 
-        this.board.onGameOver((winnerNumber) => {
+        this.board.onGameOver((winnerNumber, winCoordinates) => {
             this.gameOver = true;
-            const winnerData = new WinnerData(this.players, winnerNumber);
+            const winnerData = new WinnerData(this.players, winnerNumber, winCoordinates);
 
             this.players.forEach(player => {
                 player.notifyGameOver(winnerData);
@@ -102,20 +102,23 @@ class WinnerData {
     /**
      * @param {[]} players
      * @param {int|string} winnerNumber or 'draw'
+     * @param {[]|null} winCoordinates
      * @returns {{}} result
      * @property result.winnerNumber
      * @property result.winnerName
      */
-    constructor(players, winnerNumber) {
+    constructor(players, winnerNumber, winCoordinates) {
         if (winnerNumber === 'draw') {
             return {
                 winnerNumber: 'draw',
-                winnerName: 'draw'
+                winnerName: 'draw',
+                winCoordinates: null
             }
         }
         return {
             winnerNumber: winnerNumber,
-            winnerName: getWinnerName(players, winnerNumber)
+            winnerName: getWinnerName(players, winnerNumber),
+            winCoordinates: winCoordinates
         }
     }
 }

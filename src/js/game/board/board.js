@@ -36,19 +36,20 @@ class Board {
         // valid move
         if (this._markPlayerMove(player, coordinates)) {
             this.moveCount += 1;
-            let winner = checkWin(this.grid, this.moveCount);
+            const winnerResult = checkWin(this.grid, this.moveCount);
+
             // need to check for null because a winning player can be int value 0
-            if (winner !== null) {
-                this.gameOver(winner);
+            if (winnerResult && winnerResult.winner !== null) {
+                this.gameOver(winnerResult.winner, winnerResult.winCoordinates);
             }
         }
         return true;
     }
 
-    gameOver(winner) {
+    gameOver(winner, winCoordinates) {
         this.gameWinner = winner;
         if (this.gameOverCallback) {
-            this.gameOverCallback(winner);
+            this.gameOverCallback(winner, winCoordinates);
         }
     }
 

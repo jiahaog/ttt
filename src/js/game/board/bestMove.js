@@ -98,9 +98,9 @@ function makeMove(grid, move, player) {
 }
 
 function score(grid, activePlayer, depth) {
-    const winner = checkWin(grid);
-    if (winner !== null) {
-        if (winner === activePlayer) {
+    const winResult = checkWin(grid);
+    if (winResult && winResult.winner !== null) {
+        if (winResult.winner === activePlayer) {
             return 10 - depth;
         } else {
             return -10 - depth;
