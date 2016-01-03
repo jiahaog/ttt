@@ -20948,7 +20948,8 @@ var Board = (function () {
      *
      * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
-     * @returns {number|null|string} the winning player or null or 'draw' if draw
+     * @throws errors in making the move
+     * @returns {boolean} validity of the move
      */
 
     _createClass(Board, [{
@@ -20960,23 +20961,32 @@ var Board = (function () {
             // valid move
             if (this._markPlayerMove(player, coordinates)) {
                 this.moveCount += 1;
-                var winner = (0, _checkWin2.default)(this.grid);
+                var winner = (0, _checkWin2.default)(this.grid, this.moveCount);
                 // need to check for null because a winning player can be int value 0
                 if (winner !== null) {
-                    this.gameWinner = winner;
+                    this.gameOver(winner);
                 }
-
-                if (this.moveCount === BOARD_SIZE * BOARD_SIZE) {
-                    this.gameWinner = 'draw'; // todo might have problems with string token used
-                }
-
-                return this.gameWinner;
             }
+            return true;
+        }
+    }, {
+        key: 'gameOver',
+        value: function gameOver(winner) {
+            this.gameWinner = winner;
+            if (this.gameOverCallback) {
+                this.gameOverCallback(winner);
+            }
+        }
+    }, {
+        key: 'onGameOver',
+        value: function onGameOver(callback) {
+            this.gameOverCallback = callback;
         }
 
         /**
          * @param {int} player
          * @param {[]} coordinates length 2 list of coordinates
+         * @throws {string} invalid parameter errors
          * @returns {boolean} true if valid move
          */
 
@@ -21036,17 +21046,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  *
- * @param {[]} board
- * @returns {number | null} the winning player or null
+ * @param {[[]]} grid
+ * @returns {number|string|null} the winning player, 'draw' or null
  */
-function checkWin(board) {
+function checkWin(grid, moveCount) {
 
     var winners = {};
     // check rows
-    checkRowsOrColumns(0, board, winners);
-    checkRowsOrColumns(1, board, winners);
-    checkDiagonals(0, board, winners);
-    checkDiagonals(1, board, winners);
+    checkRowsOrColumns(0, grid, winners);
+    checkRowsOrColumns(1, grid, winners);
+    checkDiagonals(0, grid, winners);
+    checkDiagonals(1, grid, winners);
 
     if (_underscore2.default.size(winners) > 0) {
         var finalWinner = 0;
@@ -21057,6 +21067,9 @@ function checkWin(board) {
         });
         return finalWinner;
     } else {
+        if (moveCount === grid.length * grid.length) {
+            return 'draw'; // todo might have problems with string token used
+        }
         return null;
     }
 }
@@ -21064,19 +21077,19 @@ function checkWin(board) {
 /**
  *
  * @param {int} rowsOrColumns  0 - Rows, 1 - columns
- * @param {[]} board
+ * @param {[[]]} grid
  * @param {{}} winners
  */
-function checkRowsOrColumns(rowsOrColumns, board, winners) {
+function checkRowsOrColumns(rowsOrColumns, grid, winners) {
     // check rows
-    for (var j = 0; j < board.length; j++) {
+    for (var j = 0; j < grid.length; j++) {
         var consecutive = {};
-        for (var i = 0; i < board[j].length; i++) {
+        for (var i = 0; i < grid[j].length; i++) {
             var current = undefined;
             if (rowsOrColumns === 0) {
-                current = board[j][i];
+                current = grid[j][i];
             } else {
-                current = board[i][j];
+                current = grid[i][j];
             }
 
             if (current === null) {
@@ -21092,7 +21105,7 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
         }
 
         _underscore2.default.forEach(consecutive, function (value, key) {
-            if (value === board.length) {
+            if (value === grid.length) {
                 winners[key] = 1;
             }
         });
@@ -21102,17 +21115,17 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
 /**
  *
  * @param {int} selector  0 - TL-BR, 1 - BL-TR
- * @param {[]} board
+ * @param {[[]]} grid
  * @param {{}} winners
  */
-function checkDiagonals(selector, board, winners) {
+function checkDiagonals(selector, grid, winners) {
     var consecutive = {};
-    for (var i = 0; i < board.length; i++) {
+    for (var i = 0; i < grid.length; i++) {
         var current = undefined;
         if (selector === 0) {
-            current = board[i][i];
+            current = grid[i][i];
         } else {
-            current = board[board.length - 1 - i][i];
+            current = grid[grid.length - 1 - i][i];
         }
 
         if (current === null) {
@@ -21127,7 +21140,7 @@ function checkDiagonals(selector, board, winners) {
         }
     }
     _underscore2.default.forEach(consecutive, function (value, key) {
-        if (value === board.length) {
+        if (value === grid.length) {
             winners[key] = 1;
         }
     });
@@ -21170,86 +21183,94 @@ var TicTacToe = (function () {
         }
 
         /**
-         * @callback winnerCallback
-         * @param {int|string} winner index of winning player or 'draw'
-         * @param {string} winnerName name of winning player or 'draw'
+         * @callback winnerDataCallback
+         * @param {WinnerData} Winner data
          */
 
         /**
-         * @param {winnerCallback} [callback] called when game is won. If left empty,
-         *                                    the previously saved callback will be called
+         * @param {winnerDataCallback} [callback] called when game is won. If left empty,
+         *                                        the previously saved callback will be called
+         * @throws {string} Error if invalid number of players registered
          */
 
     }, {
         key: 'newGame',
-        value: function newGame(callback) {
+        value: function newGame() {
+            var _this = this;
+
+            var callback = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
+
             if (this.players.length !== 2) {
-                console.error('Need to have 2 players registered');
-                return;
+                throw 'Need to have 2 players registered';
             }
+
             this.board = new _board2.default();
             this.currentTurn = 0;
             this.gameOver = false;
-            if (callback) {
-                this.winnerCallback = callback;
-            }
+
+            this.board.onGameOver(function (winnerNumber) {
+                _this.gameOver = true;
+                var winnerData = new WinnerData(_this.players, winnerNumber);
+
+                _this.players.forEach(function (player) {
+                    player.notifyGameOver(winnerData);
+                });
+
+                callback(winnerData);
+            });
+
             this._notifyPlayers();
         }
     }, {
         key: 'makeMove',
+
+        /**
+         * @param {int} playerNumber
+         * @param {[[]]} moveCoordinates
+         * @returns {boolean} validity of the move
+         */
         value: function makeMove(playerNumber, moveCoordinates) {
-            if (this.gameOver) {
-                console.error('Game is not running, cannot make move');
-                return;
-            }
-            if (this.currentPlayerTurn !== playerNumber) {
-                console.error('Not your turn! Current turn is player:', this.currentPlayerTurn);
-                return;
-            }
-
-            var winner = this.board.makeMove(playerNumber, moveCoordinates);
-            this.currentTurn += 1;
-            this._notifyPlayers(winner);
-
-            if (winnerExists(winner)) {
-                this.gameOver = true;
-
-                if (this.winnerCallback) {
-                    var winnerName = this.getWinnerName(winner);
-                    this.winnerCallback(winner, winnerName);
+            try {
+                if (this.gameOver) {
+                    throw 'Game is not running, cannot make move';
                 }
+
+                if (this.currentPlayerTurn !== playerNumber) {
+                    throw 'Not your turn! Current turn is player: ' + this.currentPlayerTurn;
+                }
+
+                var validMove = this.board.makeMove(playerNumber, moveCoordinates);
+
+                if (!validMove) {
+                    throw 'Move is invalid!';
+                }
+
+                this.currentTurn += 1;
+                this._notifyPlayers();
+            } catch (exception) {
+                throw exception;
             }
+            return true;
         }
     }, {
         key: '_notifyPlayers',
-        value: function _notifyPlayers(winner) {
-            var _this = this;
+        value: function _notifyPlayers() {
+            var _this2 = this;
 
             this.players.forEach(function (player) {
-                player.notifyBoardChanged(_this.board.gameGrid);
-                if (winnerExists(winner)) {
-                    var winnerName = _this.getWinnerName(winner);
-                    player.notifyGameOver(winner, winnerName);
-                }
+                player.notifyBoardChanged(_this2.board.gameGrid);
             });
 
-            if (winnerExists(winner)) {
+            // When the move is made in makeMove, the callback that checks for the winning condition in board will update
+            // this.gameOver even before that function returns, so we can be assured that this.gameOver will already be
+            // updated before here.
+            if (this.gameOver) {
                 return;
             }
-            // don't put this in forEach loop because of concurrency issue
+
+            // Don't put this in forEach loop because of concurrency issue
             // where next turn is executed before the forEach completes
             this.players[this.currentPlayerTurn].notifyTurn(this.board.gameGrid);
-        }
-    }, {
-        key: 'getWinnerName',
-        value: function getWinnerName(winner) {
-            var winnerName = undefined;
-            if (winner === 'draw') {
-                winnerName = winner;
-            } else {
-                winnerName = this.players[winner].playerName;
-            }
-            return winnerName;
         }
     }, {
         key: 'currentPlayerTurn',
@@ -21261,14 +21282,43 @@ var TicTacToe = (function () {
     return TicTacToe;
 })();
 
+var WinnerData =
 /**
- * Helper function to check if there is a winner
- * @param {int|string|null|undefined} winner
+ * @param {[]} players
+ * @param {int|string} winnerNumber or 'draw'
+ * @returns {{}} result
+ * @property result.winnerNumber
+ * @property result.winnerName
+ */
+function WinnerData(players, winnerNumber) {
+    _classCallCheck(this, WinnerData);
+
+    if (winnerNumber === 'draw') {
+        return {
+            winnerNumber: 'draw',
+            winnerName: 'draw'
+        };
+    }
+    return {
+        winnerNumber: winnerNumber,
+        winnerName: getWinnerName(players, winnerNumber)
+    };
+};
+
+/**
+ * @param {[]} players
+ * @param {int | string} winnerNumber index of the winner or 'draw'
+ * @returns {string} winner name or 'draw'
  */
 
-function winnerExists(winner) {
-    // need this because winner can be 0 valued int
-    return winner !== null && winner !== undefined;
+function getWinnerName(players, winnerNumber) {
+    var winnerName = undefined;
+    if (winnerNumber === 'draw') {
+        winnerName = winnerNumber;
+    } else {
+        winnerName = players[winnerNumber].playerName;
+    }
+    return winnerName;
 }
 
 exports.default = TicTacToe;
@@ -21539,11 +21589,16 @@ var Player = (function () {
                 this.myTurnCallback(grid);
             }
         }
+
+        /**
+         * @param {WinnerData} winnerData
+         */
+
     }, {
         key: "notifyGameOver",
-        value: function notifyGameOver(winner, winnerName) {
+        value: function notifyGameOver(winnerData) {
             if (this.gameOverCallback) {
-                this.gameOverCallback(winner, winnerName);
+                this.gameOverCallback(winnerData);
             }
         }
 
@@ -21566,11 +21621,15 @@ var Player = (function () {
         }
 
         // actions
+        /**
+         * @param {[[]]} moveCoordinates
+         * @returns {boolean} validity of the move
+         */
 
     }, {
         key: "makeMove",
         value: function makeMove(moveCoordinates) {
-            this.game.makeMove(this.playerNumber, moveCoordinates);
+            return this.game.makeMove(this.playerNumber, moveCoordinates);
         }
     }]);
 
@@ -21626,15 +21685,20 @@ var GameGrid = _react2.default.createClass({
         if (!this.state.myTurn) {
             return;
         }
-
-        var cellId = event.target.id;
-        var cellCoordinates = parseGameCellId(cellId);
-
         this.setState({
             myTurn: false
         });
 
-        this.state.player.makeMove(cellCoordinates);
+        var cellId = event.target.id;
+        var cellCoordinates = parseGameCellId(cellId);
+
+        try {
+            this.state.player.makeMove(cellCoordinates);
+        } catch (invalidMoveMessage) {
+            this.setState({
+                myTurn: true
+            });
+        }
     },
     newGame: function newGame(event) {
         this.setState(_underscore2.default.clone(newGameReactState));
@@ -21660,10 +21724,10 @@ var GameGrid = _react2.default.createClass({
             });
         });
 
-        clientPlayer.onGameOver(function (winner, winnerName) {
+        clientPlayer.onGameOver(function (winnerData) {
             _this.setState({
                 gameState: gameStates.GAME_OVER,
-                winnerName: winnerName
+                winnerName: winnerData.winnerName
             });
         });
 
@@ -21714,6 +21778,9 @@ var GameGrid = _react2.default.createClass({
             _react2.default.createElement('div', { className: 'indeterminate' })
         );
     },
+    generateGameGrid: function generateGameGrid() {
+        return _generateGameGrid(this.state.gameGrid, this);
+    },
     render: function render() {
         if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
             return _react2.default.createElement(
@@ -21735,7 +21802,7 @@ var GameGrid = _react2.default.createClass({
         return _react2.default.createElement(
             'div',
             null,
-            generateGameGrid(this.state.gameGrid, this),
+            this.generateGameGrid(),
             this.maybeShowLoader(),
             this.maybeShowWinnerText(),
             _react2.default.createElement(
@@ -21756,7 +21823,7 @@ function parseGameCellId(id) {
     });
 }
 
-function generateGameGrid(grid, rootComponent) {
+function _generateGameGrid(grid, rootComponent) {
     return _react2.default.createElement(
         'div',
         { className: 'game-grid' },
@@ -21775,11 +21842,34 @@ function generateGameRows(grid, rootComponent) {
 }
 
 function generateGameCells(row, rowNumber, rootComponent) {
+    var COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
+
+    function cellStyle(isCellOccupied) {
+        var myTurn = rootComponent.state.myTurn;
+        var cellIsOccupied = isCellOccupied;
+        var gameInProgress = rootComponent.state.gameState === gameStates.GAME_IN_PROGRESS;
+
+        if (!gameInProgress) {
+            return COMMON_CELL_STYLES;
+        }
+
+        if (cellIsOccupied) {
+            return 'game-cell-disabled ' + COMMON_CELL_STYLES; // gameInProgress && cellOccupied
+        }
+
+        if (myTurn) {
+            return 'hoverable ' + COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && myTurn
+        }
+
+        return COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && !myTurn
+    }
+
     return row.map(function (cell, columnNumber) {
+        var isCellOccupied = isCellFilled(cell);
         return _react2.default.createElement(
             'div',
             { key: columnNumber, id: generateGameCellId(columnNumber, rowNumber),
-                className: 'game-cell card valign-wrapper hoverable', onClick: rootComponent.cellClicked },
+                className: cellStyle(isCellOccupied), onClick: rootComponent.cellClicked },
             _react2.default.createElement(
                 'span',
                 { id: generateGameCellLabelId(columnNumber, rowNumber),
@@ -21788,6 +21878,15 @@ function generateGameCells(row, rowNumber, rootComponent) {
             )
         );
     });
+}
+
+/**
+ * @param {int} cell
+ */
+function isCellFilled(cell) {
+    if (cell !== null) {
+        return true;
+    }
 }
 
 function generateGameCellId(i, j) {
