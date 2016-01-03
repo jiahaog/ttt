@@ -32,9 +32,12 @@ class Player {
         }
     }
 
-    notifyGameOver(winner, winnerName) {
+    /**
+     * @param {WinnerData} winnerData
+     */
+    notifyGameOver(winnerData) {
         if (this.gameOverCallback) {
-            this.gameOverCallback(winner, winnerName);
+            this.gameOverCallback(winnerData);
         }
     }
 
@@ -53,9 +56,12 @@ class Player {
     }
 
     // actions
-
+    /**
+     * @param {[[]]} moveCoordinates
+     * @returns {boolean} validity of the move
+     */
     makeMove(moveCoordinates) {
-        this.game.makeMove(this.playerNumber, moveCoordinates);
+        return this.game.makeMove(this.playerNumber, moveCoordinates);
     }
 }
 

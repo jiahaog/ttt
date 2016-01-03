@@ -2,17 +2,17 @@ import _ from 'underscore';
 
 /**
  *
- * @param {[]} board
- * @returns {number | null} the winning player or null
+ * @param {[[]]} grid
+ * @returns {number|string|null} the winning player, 'draw' or null
  */
-function checkWin(board) {
+function checkWin(grid, moveCount) {
 
     let winners = {};
     // check rows
-    checkRowsOrColumns(0, board, winners);
-    checkRowsOrColumns(1, board, winners);
-    checkDiagonals(0, board, winners);
-    checkDiagonals(1, board, winners);
+    checkRowsOrColumns(0, grid, winners);
+    checkRowsOrColumns(1, grid, winners);
+    checkDiagonals(0, grid, winners);
+    checkDiagonals(1, grid, winners);
 
     if (_.size(winners) > 0) {
         let finalWinner = 0;
@@ -23,6 +23,9 @@ function checkWin(board) {
         });
         return finalWinner;
     } else {
+        if (moveCount === grid.length * grid.length) {
+            return 'draw'; // todo might have problems with string token used
+        }
         return null;
     }
 }
@@ -30,20 +33,20 @@ function checkWin(board) {
 /**
  *
  * @param {int} rowsOrColumns  0 - Rows, 1 - columns
- * @param {[]} board
+ * @param {[[]]} grid
  * @param {{}} winners
  */
-function checkRowsOrColumns(rowsOrColumns, board, winners) {
+function checkRowsOrColumns(rowsOrColumns, grid, winners) {
     // check rows
-    for (var j = 0; j < board.length; j++) {
+    for (var j = 0; j < grid.length; j++) {
         let consecutive = {};
-        for (var i = 0; i < board[j].length; i++) {
+        for (var i = 0; i < grid[j].length; i++) {
             let current;
             if (rowsOrColumns === 0) {
-                current = board[j][i];
+                current = grid[j][i];
 
             } else {
-                current = board[i][j];
+                current = grid[i][j];
 
             }
 
@@ -60,7 +63,7 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
         }
 
         _.forEach(consecutive, (value, key) => {
-            if (value === board.length) {
+            if (value === grid.length) {
                 winners[key] = 1;
             }
         });
@@ -70,17 +73,17 @@ function checkRowsOrColumns(rowsOrColumns, board, winners) {
 /**
  *
  * @param {int} selector  0 - TL-BR, 1 - BL-TR
- * @param {[]} board
+ * @param {[[]]} grid
  * @param {{}} winners
  */
-function checkDiagonals(selector, board, winners) {
+function checkDiagonals(selector, grid, winners) {
     let consecutive = {};
-    for (var i = 0; i < board.length; i++) {
+    for (var i = 0; i < grid.length; i++) {
         let current;
         if (selector === 0) {
-            current = board[i][i];
+            current = grid[i][i];
         } else {
-            current = board[board.length - 1 - i][i];
+            current = grid[grid.length - 1 - i][i];
         }
 
         if (current === null) {
@@ -95,7 +98,7 @@ function checkDiagonals(selector, board, winners) {
         }
     }
     _.forEach(consecutive, (value, key) => {
-        if (value === board.length) {
+        if (value === grid.length) {
             winners[key] = 1;
         }
     });

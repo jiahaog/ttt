@@ -21,8 +21,8 @@ function testGame(player0Moves, player1Moves, expectedWinner) {
     const player1 = new TestPlayer(game, 'Player1', player1Moves);
 
     game.registerPlayers(player0, player1);
-    game.newGame(winner => {
-        assert.strictEqual(winner, expectedWinner, `Player ${expectedWinner} should win`);
+    game.newGame(winnerData => {
+        assert.strictEqual(winnerData.winnerNumber, expectedWinner, `Player ${expectedWinner} should win`);
     });
 }
 
@@ -37,8 +37,9 @@ function randomVsAiGame(callback) {
 
     game.registerPlayers(...playerRandomized);
 
-    game.newGame((winner, winnerName) => {
-        const aiWinsOrDraws = winnerName === aiName || winner === 'draw';
+    game.newGame(winnerData => {
+        const winnerName = winnerData.winnerName;
+        const aiWinsOrDraws = winnerName === aiName || winnerName === 'draw';
 
         if (!aiWinsOrDraws) {
             callback(`AI did not win, Winner: ${winnerName}`);

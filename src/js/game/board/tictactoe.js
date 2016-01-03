@@ -14,26 +14,35 @@ class TicTacToe {
     }
 
     /**
-     * @callback winnerCallback
-     * @param {int|string} winner index of winning player or 'draw'
-     * @param {string} winnerName name of winning player or 'draw'
+     * @callback winnerDataCallback
+     * @param {WinnerData} Winner data
      */
 
     /**
-     * @param {winnerCallback} [callback] called when game is won. If left empty,
-     *                                    the previously saved callback will be called
+     * @param {winnerDataCallback} [callback] called when game is won. If left empty,
+     *                                        the previously saved callback will be called
+     * @throws {string} Error if invalid number of players registered
      */
-    newGame(callback) {
+    newGame(callback=function(){}) {
         if (this.players.length !== 2) {
-            console.error('Need to have 2 players registered');
-            return;
+            throw 'Need to have 2 players registered';
         }
+
         this.board = new Board();
         this.currentTurn = 0;
         this.gameOver = false;
-        if (callback) {
-            this.winnerCallback = callback;
-        }
+
+        this.board.onGameOver((winnerNumber) => {
+            this.gameOver = true;
+            const winnerData = new WinnerData(this.players, winnerNumber);
+
+            this.players.forEach(player => {
+                player.notifyGameOver(winnerData);
+            });
+
+            callback(winnerData);
+        });
+
         this._notifyPlayers();
     }
 
@@ -41,66 +50,93 @@ class TicTacToe {
         return this.currentTurn % this.players.length;
     }
 
+    /**
+     * @param {int} playerNumber
+     * @param {[[]]} moveCoordinates
+     * @returns {boolean} validity of the move
+     */
     makeMove(playerNumber, moveCoordinates) {
-        if (this.gameOver) {
-            console.error('Game is not running, cannot make move');
-            return;
-        }
-        if (this.currentPlayerTurn !== playerNumber) {
-            console.error('Not your turn! Current turn is player:', this.currentPlayerTurn);
-            return;
-        }
-
-        let winner = this.board.makeMove(playerNumber, moveCoordinates);
-        this.currentTurn += 1;
-        this._notifyPlayers(winner);
-
-        if (winnerExists(winner)) {
-            this.gameOver = true;
-
-            if (this.winnerCallback) {
-                const winnerName = this.getWinnerName(winner);
-                this.winnerCallback(winner, winnerName);
+        try {
+            if (this.gameOver) {
+                throw 'Game is not running, cannot make move'
             }
+
+            if (this.currentPlayerTurn !== playerNumber) {
+                throw `Not your turn! Current turn is player: ${this.currentPlayerTurn}`;
+            }
+
+            const validMove = this.board.makeMove(playerNumber, moveCoordinates);
+
+            if (!validMove) {
+                throw 'Move is invalid!';
+            }
+
+            this.currentTurn += 1;
+            this._notifyPlayers();
+
+        } catch (exception) {
+            console.error(exception);
+            return false;
         }
+        return true;
     }
 
-    _notifyPlayers(winner) {
-
+    _notifyPlayers() {
         this.players.forEach(player => {
             player.notifyBoardChanged(this.board.gameGrid);
-            if (winnerExists(winner)) {
-                const winnerName = this.getWinnerName(winner);
-                player.notifyGameOver(winner, winnerName);
-            }
         });
 
-        if (winnerExists(winner)) {
-            return
+        // When the move is made in makeMove, the callback that checks for the winning condition in board will update
+        // this.gameOver even before that function returns, so we can be assured that this.gameOver will already be
+        // updated before here.
+        if (this.gameOver) {
+            return;
         }
-        // don't put this in forEach loop because of concurrency issue
+
+        // Don't put this in forEach loop because of concurrency issue
         // where next turn is executed before the forEach completes
         this.players[this.currentPlayerTurn].notifyTurn(this.board.gameGrid);
     }
+}
 
-    getWinnerName(winner) {
-        let winnerName;
-        if (winner === 'draw') {
-            winnerName = winner;
-        } else {
-            winnerName = this.players[winner].playerName;
+class WinnerData {
+    /**
+     * @namespace winnerData
+     * @property {int|string} winnerNumber
+     * @property {string} winnerName
+     */
+    /**
+     * @param {[]} players
+     * @param {int} winnerNumber
+     * @returns {winnerData}
+     */
+    constructor(players, winnerNumber) {
+        if (winnerNumber === 'draw') {
+            return {
+                winnerNumber: 'draw',
+                winnerName: 'draw'
+            }
         }
-        return winnerName;
+        return {
+            winnerNumber: winnerNumber,
+            winnerName: getWinnerName(players, winnerNumber)
+        }
     }
 }
 
 /**
- * Helper function to check if there is a winner
- * @param {int|string|null|undefined} winner
+ * @param {[]} players
+ * @param {int | string} winnerNumber index of the winner or 'draw'
+ * @returns {string} winner name or 'draw'
  */
-function winnerExists(winner) {
-    // need this because winner can be 0 valued int
-    return winner !== null && winner !== undefined;
+function getWinnerName(players, winnerNumber) {
+    let winnerName;
+    if (winnerNumber === 'draw') {
+        winnerName = winnerNumber;
+    } else {
+        winnerName = players[winnerNumber].playerName;
+    }
+    return winnerName;
 }
 
 export default TicTacToe;

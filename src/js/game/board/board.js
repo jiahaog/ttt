@@ -26,32 +26,43 @@ class Board {
      *
      * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
-     * @returns {number|null|string} the winning player or null or 'draw' if draw
+     * @returns {boolean} the winning player or null or 'draw' if draw
      */
     makeMove(player, coordinates) {
-        if (this.gameWinner) {
-            throw 'Game has already ended';
-        }
-        // valid move
-        if (this._markPlayerMove(player, coordinates)) {
-            this.moveCount += 1;
-            let winner = checkWin(this.grid);
-            // need to check for null because a winning player can be int value 0
-            if (winner !== null) {
-                this.gameWinner = winner;
+        try {
+            if (this.gameWinner) {
+                throw 'Game has already ended';
             }
-
-            if (this.moveCount === BOARD_SIZE*BOARD_SIZE) {
-                this.gameWinner = 'draw'; // todo might have problems with string token used
+            // valid move
+            if (this._markPlayerMove(player, coordinates)) {
+                this.moveCount += 1;
+                let winner = checkWin(this.grid, this.moveCount);
+                // need to check for null because a winning player can be int value 0
+                if (winner !== null) {
+                    this.gameOver(winner);
+                }
             }
-
-            return this.gameWinner;
+        } catch (exception) {
+            console.error(exception);
         }
+        return true;
+    }
+
+    gameOver(winner) {
+        this.gameWinner = winner;
+        if (this.gameOverCallback) {
+            this.gameOverCallback(winner);
+        }
+    }
+
+    onGameOver(callback) {
+        this.gameOverCallback = callback;
     }
 
     /**
      * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
+     * @throws {string} invalid parameter errors
      * @returns {boolean} true if valid move
      */
     _markPlayerMove(player, coordinates) {
