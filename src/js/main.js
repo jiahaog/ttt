@@ -99,17 +99,18 @@ let GameGrid = React.createClass({
             return;
         }
 
-        let winnerName = this.state.winnerName;
+        const winnerName = this.state.winnerName;
 
+        let winnerText;
         if (winnerName === 'draw') {
-            return <div>
-                It's a draw!
-            </div>
+            winnerText = "It's a draw!";
         } else {
-            return <div>
-                {winnerName} wins!
-            </div>
+            winnerText = `${winnerName} wins!`;
         }
+
+        return <div className="center-align">
+            {winnerText}
+        </div>
     },
     maybeShowLoader: function () {
         if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
@@ -125,9 +126,9 @@ let GameGrid = React.createClass({
     },
     render: function () {
         return <div>
-            <div>
-                <a className="waves-effect waves-light btn" data-player="0" onClick={this.choosePlayer}>Start First</a>
-                <a className="waves-effect waves-light btn" data-player="1" onClick={this.choosePlayer}>Start Second</a>
+            <div className="game-button-group center-align row">
+                <a className="game-button waves-effect waves-teal btn-flat" data-player="0" onClick={this.choosePlayer}>Start First</a>
+                <a className="game-button waves-effect waves-teal btn-flat" data-player="1" onClick={this.choosePlayer}>Start Second</a>
             </div>
             {this.generateGameGrid()}
             {this.maybeShowLoader()}
@@ -150,8 +151,14 @@ function parseGameCellId(id) {
 }
 
 function generateGameGrid(grid, rootComponent, winCoordinates) {
+    let gridStyle;
+    if (rootComponent.state.gameState === gameStates.CHOOSE_PLAYER) {
+        gridStyle = 'game-cell-disabled game-grid';
+    } else {
+        gridStyle = 'game-grid';
+    }
     return (
-        <div className="game-grid">
+        <div className={gridStyle}>
             {generateGameRows(grid, rootComponent, winCoordinates)}
         </div>
     )
@@ -187,7 +194,7 @@ function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
         }
 
         if (myTurn) {
-            return `hoverable ${COMMON_CELL_STYLES}`; // gameInProgress && !cellOccupied && myTurn
+            return `waves-effect waves-teal hoverable ${COMMON_CELL_STYLES}`; // gameInProgress && !cellOccupied && myTurn
         }
 
         return COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && !myTurn
