@@ -204,9 +204,21 @@ function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
                     className={cellStyle(isCellOccupied, cellPartOfWinCoordinates)} onClick={rootComponent.cellClicked}>
             <span id={generateGameCellLabelId(columnNumber, rowNumber)}
-                  className="game-cell-label center-align valign">{cell}</span>
+                  className="game-cell-label center-align valign">{gridText(cell)}</span>
         </div>
     });
+}
+
+function gridText(text) {
+    if (text === null) {
+        return '';
+    }
+
+    if (text === 1) {
+        return <div className="cell-marker">◯</div>
+    } else {
+        return <div className="cell-marker">╳</div>
+    }
 }
 
 /**
