@@ -20632,11 +20632,82 @@ module.exports = require('./lib/React');
 }.call(this));
 
 },{}],160:[function(require,module,exports){
+var bundleFn = arguments[3];
+var sources = arguments[4];
+var cache = arguments[5];
+
+var stringify = JSON.stringify;
+
+module.exports = function (fn) {
+    var keys = [];
+    var wkey;
+    var cacheKeys = Object.keys(cache);
+
+    for (var i = 0, l = cacheKeys.length; i < l; i++) {
+        var key = cacheKeys[i];
+        var exp = cache[key].exports;
+        // Using babel as a transpiler to use esmodule, the export will always
+        // be an object with the default export as a property of it. To ensure
+        // the existing api and babel esmodule exports are both supported we
+        // check for both
+        if (exp === fn || exp.default === fn) {
+            wkey = key;
+            break;
+        }
+    }
+
+    if (!wkey) {
+        wkey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
+        var wcache = {};
+        for (var i = 0, l = cacheKeys.length; i < l; i++) {
+            var key = cacheKeys[i];
+            wcache[key] = key;
+        }
+        sources[wkey] = [
+            Function(['require','module','exports'], '(' + fn + ')(self)'),
+            wcache
+        ];
+    }
+    var skey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
+
+    var scache = {}; scache[wkey] = wkey;
+    sources[skey] = [
+        Function(['require'], (
+            // try to call default if defined to also support babel esmodule
+            // exports
+            'var f = require(' + stringify(wkey) + ');' +
+            '(f.default ? f.default : f)(self);'
+        )),
+        scache
+    ];
+
+    var src = '(' + bundleFn + ')({'
+        + Object.keys(sources).map(function (key) {
+            return stringify(key) + ':['
+                + sources[key][0]
+                + ',' + stringify(sources[key][1]) + ']'
+            ;
+        }).join(',')
+        + '},{},[' + stringify(skey) + '])'
+    ;
+
+    var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+    return new Worker(URL.createObjectURL(
+        new Blob([src], { type: 'text/javascript' })
+    ));
+};
+
+},{}],161:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
 
 var _checkWin = require('./checkWin');
 
@@ -20651,16 +20722,38 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var deepCopy = _helpers2.default.deepCopy;
+var getCornerFromGrid = _helpers2.default.getCornerFromGrid;
 var getPossibleMoves = _helpers2.default.getPossibleMoves;
+var isGridEmpty = _helpers2.default.isGridEmpty;
 
+/**
+ * @callback bestMoveCallback
+ * @param error
+ * @param {[[]]} [bestMove]
+ */
 /**
  * Wrapper to simplify first run of Minimax
  * @param grid
  * @param activePlayer
+ * @param {bestMoveCallback} callback
  * @returns {*[]|int}
  */
-function bestMove(grid, activePlayer) {
-    return minimax(grid, activePlayer, activePlayer, 0, true);
+function bestMove(grid, activePlayer, callback) {
+    _underscore2.default.defer(function () {
+        try {
+            var best = undefined;
+            if (isGridEmpty(grid)) {
+                // save computation and simply return a corner
+                best = getCornerFromGrid(grid);
+            } else {
+                best = minimax(grid, activePlayer, activePlayer, 0, true);
+            }
+
+            callback(null, best);
+        } catch (error) {
+            callback(error);
+        }
+    });
 }
 
 /**
@@ -20744,7 +20837,71 @@ function score(grid, activePlayer, depth) {
 
 exports.default = bestMove;
 
-},{"./../helpers":164,"./checkWin":162}],161:[function(require,module,exports){
+},{"./../helpers":167,"./checkWin":165,"underscore":159}],162:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (self) {
+    self.addEventListener('message', function (ev) {
+        var args = ev.data; // [grid, activePlayer]
+
+        _bestMove2.default.apply(undefined, _toConsumableArray(args).concat([function (error, bestMove) {
+            self.postMessage([error, bestMove]);
+        }]));
+    });
+};
+
+var _bestMove = require('./bestMove');
+
+var _bestMove2 = _interopRequireDefault(_bestMove);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+/**
+ * Wrapper to run bestMove in a Web Worker
+ */
+
+;
+
+},{"./bestMove":161}],163:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _webworkify = require('webworkify');
+
+var _webworkify2 = _interopRequireDefault(_webworkify);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+/**
+ * Wrapper to execute bestMove in a Web Worker, with the same api we use in bestMove.js
+ * @param grid
+ * @param activePlayer
+ * @param callback
+ */
+function bestMoveWorkerMain(grid, activePlayer, callback) {
+    var worker = (0, _webworkify2.default)(require('./bestMoveWebWorker.js'));
+
+    worker.addEventListener('message', function (ev) {
+        var params = ev.data; // [error, bestMoveCoordinates]
+        callback.apply(undefined, _toConsumableArray(params));
+    });
+    worker.postMessage([grid, activePlayer]);
+}
+
+exports.default = bestMoveWorkerMain;
+
+},{"./bestMoveWebWorker.js":162,"webworkify":160}],164:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -20864,7 +21021,7 @@ var Board = (function () {
 
 exports.default = Board;
 
-},{"./../helpers":164,"./checkWin":162}],162:[function(require,module,exports){
+},{"./../helpers":167,"./checkWin":165}],165:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20978,7 +21135,7 @@ function checkDiagonals(selector, board, winners) {
 
 exports.default = checkWin;
 
-},{"underscore":159}],163:[function(require,module,exports){
+},{"underscore":159}],166:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21116,12 +21273,19 @@ function winnerExists(winner) {
 
 exports.default = TicTacToe;
 
-},{"./board":161}],164:[function(require,module,exports){
+},{"./board":164}],167:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function deepCopy(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
@@ -21149,15 +21313,36 @@ function getPossibleMoves(grid) {
     return possibleMoves;
 }
 
+function isGridEmpty(grid) {
+    return !grid.some(function (row) {
+        return row.some(function (cell) {
+            return cell !== null;
+        });
+    });
+}
+
+function getCornerFromGrid(grid) {
+    // grid assumed to be square
+    return getCornerCoordinates(grid.length);
+}
+
+function getCornerCoordinates(length) {
+    var corners = [[0, 0], [length - 1, 0], [length - 1, length - 1], [0, length - 1]];
+
+    return _underscore2.default.sample(corners);
+}
+
 var api = {
     deepCopy: deepCopy,
+    getCornerFromGrid: getCornerFromGrid,
     getPossibleMoves: getPossibleMoves,
+    isGridEmpty: isGridEmpty,
     prettyPrintGrid: prettyPrintGrid
 };
 
 exports.default = api;
 
-},{}],165:[function(require,module,exports){
+},{"underscore":159}],168:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21172,6 +21357,10 @@ var _perfectPlayer = require('./players/perfectPlayer');
 
 var _perfectPlayer2 = _interopRequireDefault(_perfectPlayer);
 
+var _perfectPlayerWeb = require('./players/perfectPlayerWeb');
+
+var _perfectPlayerWeb2 = _interopRequireDefault(_perfectPlayerWeb);
+
 var _player = require('./players/player');
 
 var _player2 = _interopRequireDefault(_player);
@@ -21181,6 +21370,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var api = {
     players: {
         PerfectPlayer: _perfectPlayer2.default,
+        PerfectPlayerWeb: _perfectPlayerWeb2.default,
         Player: _player2.default
     },
     TicTacToe: _tictactoe2.default
@@ -21188,7 +21378,7 @@ var api = {
 
 exports.default = api;
 
-},{"./board/tictactoe":163,"./players/perfectPlayer":166,"./players/player":167}],166:[function(require,module,exports){
+},{"./board/tictactoe":166,"./players/perfectPlayer":169,"./players/perfectPlayerWeb":170,"./players/player":171}],169:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21216,28 +21406,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PerfectPlayer = (function (_Player) {
     _inherits(PerfectPlayer, _Player);
 
-    function PerfectPlayer() {
-        var _Object$getPrototypeO;
+    /**
+     * @param {TicTacToe} game
+     * @param {string} [playerName]
+     * @param {function} [customBestMove] custom bestMove function
+     */
+
+    function PerfectPlayer(game, playerName) {
+        var customBestMove = arguments.length <= 2 || arguments[2] === undefined ? _bestMove2.default : arguments[2];
 
         _classCallCheck(this, PerfectPlayer);
 
-        for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
-            params[_key] = arguments[_key];
-        }
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PerfectPlayer).call(this, game, playerName));
 
-        var _this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(PerfectPlayer)).call.apply(_Object$getPrototypeO, [this].concat(params)));
+        _this.bestMoveFunction = customBestMove;
 
         _this.onMyTurn(function (gameGrid) {
-            var perfectMove = _this.getMove(gameGrid);
-            _this.makeMove(perfectMove);
+            _this.getMove(gameGrid, function (error, perfectMove) {
+                if (error) {
+                    console.error('BestMoveCallbackError:', error);
+                    return;
+                }
+                _this.makeMove(perfectMove);
+            });
         });
         return _this;
     }
 
     _createClass(PerfectPlayer, [{
         key: 'getMove',
-        value: function getMove(gameGrid) {
-            return (0, _bestMove2.default)(gameGrid, this.playerNumber);
+        value: function getMove(gameGrid, callback) {
+            this.bestMoveFunction(gameGrid, this.playerNumber, callback);
         }
     }]);
 
@@ -21246,7 +21445,49 @@ var PerfectPlayer = (function (_Player) {
 
 exports.default = PerfectPlayer;
 
-},{"./../board/bestMove":160,"./player":167}],167:[function(require,module,exports){
+},{"./../board/bestMove":161,"./player":171}],170:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _perfectPlayer = require('./perfectPlayer');
+
+var _perfectPlayer2 = _interopRequireDefault(_perfectPlayer);
+
+var _bestMoveWebWorkerMain = require('./../board/bestMoveWebWorkerMain');
+
+var _bestMoveWebWorkerMain2 = _interopRequireDefault(_bestMoveWebWorkerMain);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Perfect player using Web Workers
+ * Can't use this in node.js, only for web!
+ */
+
+var PerfectPlayerWeb = (function (_PerfectPlayer) {
+    _inherits(PerfectPlayerWeb, _PerfectPlayer);
+
+    function PerfectPlayerWeb(game, playerName) {
+        _classCallCheck(this, PerfectPlayerWeb);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(PerfectPlayerWeb).call(this, game, playerName, _bestMoveWebWorkerMain2.default));
+    }
+
+    return PerfectPlayerWeb;
+})(_perfectPlayer2.default);
+
+exports.default = PerfectPlayerWeb;
+
+},{"./../board/bestMoveWebWorkerMain":163,"./perfectPlayer":169}],171:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21338,7 +21579,7 @@ var Player = (function () {
 
 exports.default = Player;
 
-},{}],168:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21349,25 +21590,40 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
 var _index = require('./game/index.js');
 
 var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var PerfectPlayer = _index2.default.players.PerfectPlayer;
+var PerfectPlayer = _index2.default.players.PerfectPlayerWeb;
 var Player = _index2.default.players.Player;
+
+var gameStates = {
+    CHOOSE_PLAYER: 'STATE_CHOOSE_PLAYER',
+    GAME_IN_PROGRESS: 'STATE_GAME_IN_PROGRESS',
+    GAME_OVER: 'STATE_GAME_OVER'
+};
+
+var newGameReactState = {
+    gameState: gameStates.CHOOSE_PLAYER,
+    myTurn: false,
+    gameGrid: null,
+    winnerName: null
+};
 
 var GameGrid = _react2.default.createClass({
     displayName: 'GameGrid',
 
     getInitialState: function getInitialState() {
-        return {
-            gameStarted: false
-        };
+        return _underscore2.default.clone(newGameReactState);
     },
     cellClicked: function cellClicked(event) {
-        if (this.state.gridDisabled) {
+        if (!this.state.myTurn) {
             return;
         }
 
@@ -21375,15 +21631,13 @@ var GameGrid = _react2.default.createClass({
         var cellCoordinates = parseGameCellId(cellId);
 
         this.setState({
-            gridDisabled: true
+            myTurn: false
         });
 
         this.state.player.makeMove(cellCoordinates);
     },
     newGame: function newGame(event) {
-        this.setState({
-            gameStarted: false
-        });
+        this.setState(_underscore2.default.clone(newGameReactState));
     },
     choosePlayer: function choosePlayer(event) {
         var _this = this;
@@ -21402,12 +21656,13 @@ var GameGrid = _react2.default.createClass({
 
         clientPlayer.onMyTurn(function () {
             _this.setState({
-                gridDisabled: false
+                myTurn: true
             });
         });
 
         clientPlayer.onGameOver(function (winner, winnerName) {
             _this.setState({
+                gameState: gameStates.GAME_OVER,
                 winnerName: winnerName
             });
         });
@@ -21422,15 +21677,16 @@ var GameGrid = _react2.default.createClass({
         game.newGame();
 
         this.setState({
-            gameStarted: true,
+            gameState: gameStates.GAME_IN_PROGRESS,
             player: clientPlayer
         });
     },
-    winnerText: function winnerText() {
-        var winnerName = this.state.winnerName;
-        if (!winnerName) {
+    maybeShowWinnerText: function maybeShowWinnerText() {
+        if (this.state.gameState !== gameStates.GAME_OVER) {
             return;
         }
+
+        var winnerName = this.state.winnerName;
 
         if (winnerName === 'draw') {
             return _react2.default.createElement(
@@ -21447,8 +21703,19 @@ var GameGrid = _react2.default.createClass({
             );
         }
     },
+    maybeShowLoader: function maybeShowLoader() {
+        if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
+            return '';
+        }
+
+        return _react2.default.createElement(
+            'div',
+            { className: 'progress' },
+            _react2.default.createElement('div', { className: 'indeterminate' })
+        );
+    },
     render: function render() {
-        if (!this.state.gameStarted) {
+        if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
             return _react2.default.createElement(
                 'div',
                 null,
@@ -21469,17 +21736,8 @@ var GameGrid = _react2.default.createClass({
             'div',
             null,
             generateGameGrid(this.state.gameGrid, this),
-            _react2.default.createElement(
-                'div',
-                null,
-                this.state.currentPlayer
-            ),
-            _react2.default.createElement(
-                'div',
-                null,
-                this.state.playerChosen
-            ),
-            this.winnerText(),
+            this.maybeShowLoader(),
+            this.maybeShowWinnerText(),
             _react2.default.createElement(
                 'a',
                 { className: 'waves-effect waves-light btn', onClick: this.newGame },
@@ -21540,7 +21798,7 @@ function generateGameCellLabelId(i, j) {
     return 'game-cell-label-' + i + '-' + j;
 }
 
-},{"./game/index.js":165,"react":158,"react-dom":29}]},{},[168])
+},{"./game/index.js":168,"react":158,"react-dom":29,"underscore":159}]},{},[172])
 
 
 //# sourceMappingURL=main.js.map
