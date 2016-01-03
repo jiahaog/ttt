@@ -1,16 +1,31 @@
+import _ from 'underscore';
+
 import checkWin from './checkWin';
 import helpers from './../helpers';
 const deepCopy = helpers.deepCopy;
 const getPossibleMoves = helpers.getPossibleMoves;
 
 /**
+ * @callback bestMoveCallback
+ * @param error
+ * @param {[[]]} [bestMove]
+ */
+/**
  * Wrapper to simplify first run of Minimax
  * @param grid
  * @param activePlayer
+ * @param {bestMoveCallback} callback
  * @returns {*[]|int}
  */
-function bestMove(grid, activePlayer) {
-    return minimax(grid, activePlayer, activePlayer, 0, true);
+function bestMove(grid, activePlayer, callback) {
+    _.defer(() => {
+        try {
+            const best = minimax(grid, activePlayer, activePlayer, 0, true);
+            callback(null, best);
+        } catch (error) {
+            callback(error);
+        }
+    });
 }
 
 /**
