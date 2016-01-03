@@ -103,12 +103,12 @@ let GameGrid = React.createClass({
 
         let winnerText;
         if (winnerName === 'draw') {
-            winnerText = "It's a draw!";
+            winnerText = 'draw';
         } else {
-            winnerText = `${winnerName} wins!`;
+            winnerText = 'You Lose';
         }
 
-        return <div className="center-align">
+        return <div className="game-winner-text page-text center-align">
             {winnerText}
         </div>
     },
@@ -255,37 +255,7 @@ function generateGameCellLabelId(i, j) {
 function preloader() {
     return <div className="center-align row">
         <div className="preloader-wrapper active">
-            <div className="spinner-layer spinner-blue">
-                <div className="circle-clipper left">
-                    <div className="circle"></div>
-                </div><div className="gap-patch">
-                <div className="circle"></div>
-            </div><div className="circle-clipper right">
-                <div className="circle"></div>
-            </div>
-            </div>
-
-            <div className="spinner-layer spinner-red">
-                <div className="circle-clipper left">
-                    <div className="circle"></div>
-                </div><div className="gap-patch">
-                <div className="circle"></div>
-            </div><div className="circle-clipper right">
-                <div className="circle"></div>
-            </div>
-            </div>
-
-            <div className="spinner-layer spinner-yellow">
-                <div className="circle-clipper left">
-                    <div className="circle"></div>
-                </div><div className="gap-patch">
-                <div className="circle"></div>
-            </div><div className="circle-clipper right">
-                <div className="circle"></div>
-            </div>
-            </div>
-
-            <div className="spinner-layer spinner-green">
+            <div className="spinner-layer">
                 <div className="circle-clipper left">
                     <div className="circle"></div>
                 </div><div className="gap-patch">

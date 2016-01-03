@@ -1,9 +1,10 @@
+@color-material-grey: #757575;
+
 .game-cell {
   width: 100px;
   height: 100px;
   margin: 10px;
 }
-
 
 .game-grid {
   margin-top: 5%;
@@ -44,14 +45,23 @@
     padding-right: 25px;
   }
 }
-.page-title {
+
+.game-winner-text {
+  font-size: 2em;
+  letter-spacing: 10px;
+}
+
+.page-text {
   font-weight: 100;
   text-transform: uppercase;
+}
+
+.page-title {
   letter-spacing: 20px;
 }
 
 .cell-marker {
   font-size: 1.7em;
   font-weight: 600;
-  color: #757575;
+  color: @color-material-grey;
 }
