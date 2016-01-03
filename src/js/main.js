@@ -59,10 +59,10 @@ let GameGrid = React.createClass({
             });
         });
 
-        clientPlayer.onGameOver((winner, winnerName) => {
+        clientPlayer.onGameOver(winnerData => {
             this.setState({
                 gameState: gameStates.GAME_OVER,
-                winnerName: winnerName
+                winnerName: winnerData.winnerName
             });
         });
 
@@ -177,7 +177,7 @@ function generateGameCells(row, rowNumber, rootComponent) {
 
         return COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && !myTurn
     }
-    
+
     return row.map((cell, columnNumber) => {
         const isCellOccupied = isCellFilled(cell);
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
