@@ -56,27 +56,25 @@ class TicTacToe {
      * @returns {boolean} validity of the move
      */
     makeMove(playerNumber, moveCoordinates) {
-        try {
-            if (this.gameOver) {
-                throw 'Game is not running, cannot make move'
-            }
 
-            if (this.currentPlayerTurn !== playerNumber) {
-                throw `Not your turn! Current turn is player: ${this.currentPlayerTurn}`;
-            }
-
-            const validMove = this.board.makeMove(playerNumber, moveCoordinates);
-
-            if (!validMove) {
-                throw 'Move is invalid!';
-            }
-
-            this.currentTurn += 1;
-            this._notifyPlayers();
-
-        } catch (exception) {
-            throw exception;
+        if (this.gameOver) {
+            throw 'Game is not running, cannot make move'
         }
+
+        if (this.currentPlayerTurn !== playerNumber) {
+            throw `Not your turn! Current turn is player: ${this.currentPlayerTurn}`;
+        }
+
+        const validMove = this.board.makeMove(playerNumber, moveCoordinates);
+
+        if (!validMove) {
+            throw 'Move is invalid!';
+        }
+
+        this.currentTurn += 1;
+        this._notifyPlayers();
+
+
         return true;
     }
 
