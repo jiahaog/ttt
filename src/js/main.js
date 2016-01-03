@@ -27,15 +27,20 @@ let GameGrid = React.createClass({
         if (!this.state.myTurn) {
             return;
         }
-
-        const cellId = event.target.id;
-        const cellCoordinates = parseGameCellId(cellId);
-
         this.setState({
             myTurn: false
         });
 
-        this.state.player.makeMove(cellCoordinates);
+        const cellId = event.target.id;
+        const cellCoordinates = parseGameCellId(cellId);
+
+        try {
+            this.state.player.makeMove(cellCoordinates);
+        } catch (invalidMoveMessage) {
+            this.setState({
+                myTurn: true
+            });
+        }
     },
     newGame: function (event) {
         this.setState(_.clone(newGameReactState));
@@ -167,7 +172,7 @@ function generateGameCells(row, rowNumber, rootComponent) {
             return COMMON_CELL_STYLES;
         }
 
-        if (cellIsOccupied ) {
+        if (cellIsOccupied) {
             return `game-cell-disabled ${COMMON_CELL_STYLES}`; // gameInProgress && cellOccupied
         }
 

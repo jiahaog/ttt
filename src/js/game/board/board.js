@@ -26,25 +26,21 @@ class Board {
      *
      * @param {int} player
      * @param {[]} coordinates length 2 list of coordinates
-     * @returns {boolean} the winning player or null or 'draw' if draw
+     * @throws errors in making the move
+     * @returns {boolean} validity of the move
      */
     makeMove(player, coordinates) {
-        try {
-            if (this.gameWinner) {
-                throw 'Game has already ended';
+        if (this.gameWinner) {
+            throw 'Game has already ended';
+        }
+        // valid move
+        if (this._markPlayerMove(player, coordinates)) {
+            this.moveCount += 1;
+            let winner = checkWin(this.grid, this.moveCount);
+            // need to check for null because a winning player can be int value 0
+            if (winner !== null) {
+                this.gameOver(winner);
             }
-            // valid move
-            if (this._markPlayerMove(player, coordinates)) {
-                this.moveCount += 1;
-                let winner = checkWin(this.grid, this.moveCount);
-                // need to check for null because a winning player can be int value 0
-                if (winner !== null) {
-                    this.gameOver(winner);
-                }
-            }
-        } catch (exception) {
-            console.error(exception);
-            return false;
         }
         return true;
     }

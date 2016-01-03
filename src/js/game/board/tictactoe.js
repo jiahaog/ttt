@@ -75,8 +75,7 @@ class TicTacToe {
             this._notifyPlayers();
 
         } catch (exception) {
-            console.error(exception);
-            return false;
+            throw exception;
         }
         return true;
     }
