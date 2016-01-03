@@ -16,7 +16,8 @@ const newGameReactState = {
     gameState: gameStates.CHOOSE_PLAYER,
     myTurn: false,
     gameGrid: null,
-    winnerName: null
+    winnerName: null,
+    winCoordinates: null
 };
 
 let GameGrid = React.createClass({
@@ -67,7 +68,8 @@ let GameGrid = React.createClass({
         clientPlayer.onGameOver(winnerData => {
             this.setState({
                 gameState: gameStates.GAME_OVER,
-                winnerName: winnerData.winnerName
+                winnerName: winnerData.winnerName,
+                winCoordinates: winnerData.winCoordinates
             });
         });
 
@@ -112,7 +114,7 @@ let GameGrid = React.createClass({
         </div>
     },
     generateGameGrid: function () {
-        return generateGameGrid(this.state.gameGrid, this);
+        return generateGameGrid(this.state.gameGrid, this, this.state.winCoordinates);
     },
     render: function () {
         if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
@@ -144,31 +146,36 @@ function parseGameCellId(id) {
         });
 }
 
-function generateGameGrid(grid, rootComponent) {
+function generateGameGrid(grid, rootComponent, winCoordinates) {
     return (
         <div className="game-grid">
-            {generateGameRows(grid, rootComponent)}
+            {generateGameRows(grid, rootComponent, winCoordinates)}
         </div>
     )
 }
 
-function generateGameRows(grid, rootComponent) {
+function generateGameRows(grid, rootComponent, winCoordinates) {
     return grid.map((row, rowNumber) => {
         return <div className="game-row" key={rowNumber}>
-            {generateGameCells(row, rowNumber, rootComponent)}
+            {generateGameCells(row, rowNumber, rootComponent, winCoordinates)}
         </div>
     })
 }
 
-function generateGameCells(row, rowNumber, rootComponent) {
+function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
     const COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
 
-    function cellStyle(isCellOccupied) {
+    function cellStyle(isCellOccupied, cellPartOfWinCoordinates) {
         const myTurn = rootComponent.state.myTurn;
         const cellIsOccupied = isCellOccupied;
         const gameInProgress = rootComponent.state.gameState === gameStates.GAME_IN_PROGRESS;
 
         if (!gameInProgress) {
+
+            if (cellPartOfWinCoordinates) {
+                return `game-cell-winning ${COMMON_CELL_STYLES}`;
+            }
+
             return COMMON_CELL_STYLES;
         }
 
@@ -185,12 +192,28 @@ function generateGameCells(row, rowNumber, rootComponent) {
 
     return row.map((cell, columnNumber) => {
         const isCellOccupied = isCellFilled(cell);
+        const cellPartOfWinCoordinates = arrayContainsArray([columnNumber, rowNumber], winCoordinates);
+
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
-                    className={cellStyle(isCellOccupied)} onClick={rootComponent.cellClicked}>
+                    className={cellStyle(isCellOccupied, cellPartOfWinCoordinates)} onClick={rootComponent.cellClicked}>
             <span id={generateGameCellLabelId(columnNumber, rowNumber)}
                   className="game-cell-label center-align valign">{cell}</span>
         </div>
-    })
+    });
+}
+
+/**
+ * @param smallArray
+ * @param [nestedArray]
+ * @returns {boolean}
+ */
+function arrayContainsArray(smallArray, nestedArray) {
+    if (!nestedArray) {
+        return false;
+    }
+    return nestedArray.some(checkCoords => {
+        return _.isEqual(smallArray, checkCoords);
+    });
 }
 
 /**
