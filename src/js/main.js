@@ -1,19 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import _ from 'underscore';
 
 import gameApi from './game/index.js';
 const PerfectPlayer = gameApi.players.PerfectPlayerWeb;
 const Player = gameApi.players.Player;
 
+const gameStates = {
+    CHOOSE_PLAYER: 'STATE_CHOOSE_PLAYER',
+    GAME_IN_PROGRESS: 'STATE_GAME_IN_PROGRESS',
+    GAME_OVER: 'STATE_GAME_OVER'
+};
+
+const newGameReactState = {
+    gameState: gameStates.CHOOSE_PLAYER,
+    myTurn: false,
+    gameGrid: null,
+    winnerName: null
+};
+
+
 
 let GameGrid = React.createClass({
     getInitialState: function () {
-        return {
-            gameStarted: false
-        }
+        return _.clone(newGameReactState);
     },
     cellClicked: function (event) {
-        if (this.state.gridDisabled) {
+        if (!this.state.myTurn) {
             return;
         }
 
@@ -21,15 +34,13 @@ let GameGrid = React.createClass({
         const cellCoordinates = parseGameCellId(cellId);
 
         this.setState({
-            gridDisabled: true
+            myTurn: false
         });
 
         this.state.player.makeMove(cellCoordinates);
     },
     newGame: function (event) {
-        this.setState({
-            gameStarted: false
-        });
+        this.setState(_.clone(newGameReactState));
     },
     choosePlayer: function (event) {
         const playerChosen = parseInt(event.target.dataset.player);
@@ -46,12 +57,13 @@ let GameGrid = React.createClass({
 
         clientPlayer.onMyTurn(() => {
             this.setState({
-                gridDisabled: false
+                myTurn: true
             });
         });
 
         clientPlayer.onGameOver((winner, winnerName) => {
             this.setState({
+                gameState: gameStates.GAME_OVER,
                 winnerName: winnerName
             });
         });
@@ -66,7 +78,7 @@ let GameGrid = React.createClass({
         game.newGame();
 
         this.setState({
-            gameStarted: true,
+            gameState: gameStates.GAME_IN_PROGRESS,
             player: clientPlayer
         });
     },
@@ -86,8 +98,17 @@ let GameGrid = React.createClass({
             </div>
         }
     },
+    maybeShowLoader: function () {
+        if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
+            return ''
+        }
+
+        return <div className="progress">
+            <div className="indeterminate"></div>
+        </div>
+    },
     render: function () {
-        if (!this.state.gameStarted) {
+        if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
             return <div>
                 <a className="waves-effect waves-light btn" data-player="0" onClick={this.choosePlayer}>Start First</a>
                 <a className="waves-effect waves-light btn" data-player="1" onClick={this.choosePlayer}>Start Second</a>
@@ -96,6 +117,7 @@ let GameGrid = React.createClass({
 
         return <div>
             {generateGameGrid(this.state.gameGrid, this)}
+            {this.maybeShowLoader()}
             <div>{this.state.currentPlayer}</div>
             <div>{this.state.playerChosen}</div>
             {this.winnerText()}
@@ -116,7 +138,6 @@ function parseGameCellId(id) {
             return parseInt(value);
         });
 }
-
 
 function generateGameGrid(grid, rootComponent) {
     return (
