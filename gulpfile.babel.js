@@ -11,6 +11,7 @@ import mocha from 'gulp-mocha';
 import less from 'gulp-less';
 import browserSync from 'browser-sync';
 import ghPages from 'gulp-gh-pages';
+import uglify from 'gulp-uglify';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -24,6 +25,7 @@ function compileJs(watch) {
             .pipe(source('main.js'))
             .pipe(buffer())
             .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
             .pipe(sourcemaps.write('./'))
             .pipe(gulp.dest('./dist/js'))
             .pipe(browserSync.reload({
