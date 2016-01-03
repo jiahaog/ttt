@@ -106,6 +106,9 @@ let GameGrid = React.createClass({
             <div className="indeterminate"></div>
         </div>
     },
+    generateGameGrid: function () {
+        return generateGameGrid(this.state.gameGrid, this);
+    },
     render: function () {
         if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
             return <div>
@@ -115,7 +118,7 @@ let GameGrid = React.createClass({
         }
 
         return <div>
-            {generateGameGrid(this.state.gameGrid, this)}
+            {this.generateGameGrid()}
             {this.maybeShowLoader()}
             {this.maybeShowWinnerText()}
             <a className="waves-effect waves-light btn" onClick={this.newGame}>New Game</a>
@@ -153,13 +156,45 @@ function generateGameRows(grid, rootComponent) {
 }
 
 function generateGameCells(row, rowNumber, rootComponent) {
+    const COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
+
+    function cellStyle(isCellOccupied) {
+        const myTurn = rootComponent.state.myTurn;
+        const cellIsOccupied = isCellOccupied;
+        const gameInProgress = rootComponent.state.gameState === gameStates.GAME_IN_PROGRESS;
+
+        if (!gameInProgress) {
+            return COMMON_CELL_STYLES;
+        }
+
+        if (cellIsOccupied ) {
+            return `game-cell-disabled ${COMMON_CELL_STYLES}`; // gameInProgress && cellOccupied
+        }
+
+        if (myTurn) {
+            return `hoverable ${COMMON_CELL_STYLES}`; // gameInProgress && !cellOccupied && myTurn
+        }
+
+        return COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && !myTurn
+    }
+    
     return row.map((cell, columnNumber) => {
+        const isCellOccupied = isCellFilled(cell);
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
-                    className="game-cell card valign-wrapper hoverable" onClick={rootComponent.cellClicked}>
+                    className={cellStyle(isCellOccupied)} onClick={rootComponent.cellClicked}>
             <span id={generateGameCellLabelId(columnNumber, rowNumber)}
                   className="game-cell-label center-align valign">{cell}</span>
         </div>
     })
+}
+
+/**
+ * @param {int} cell
+ */
+function isCellFilled(cell) {
+    if (cell !== null) {
+        return true;
+    }
 }
 
 function generateGameCellId(i, j) {
