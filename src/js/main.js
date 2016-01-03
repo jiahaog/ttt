@@ -187,7 +187,7 @@ function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
         }
 
         if (cellIsOccupied) {
-            return `game-cell-disabled ${COMMON_CELL_STYLES}`; // gameInProgress && cellOccupied
+            return COMMON_CELL_STYLES; // gameInProgress && cellOccupied
         }
 
         if (myTurn) {
