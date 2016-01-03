@@ -12,10 +12,16 @@ const gameStates = {
     GAME_OVER: 'STATE_GAME_OVER'
 };
 
+const emptyGrid = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
+];
+
 const newGameReactState = {
     gameState: gameStates.CHOOSE_PLAYER,
     myTurn: false,
-    gameGrid: null,
+    gameGrid: emptyGrid,
     winnerName: null,
     winCoordinates: null
 };
@@ -43,10 +49,11 @@ let GameGrid = React.createClass({
             });
         }
     },
-    newGame: function (event) {
+    newGame: function () {
         this.setState(_.clone(newGameReactState));
     },
     choosePlayer: function (event) {
+        this.newGame();
         const playerChosen = parseInt(event.target.dataset.player);
 
         const game = new gameApi.TicTacToe();
@@ -117,18 +124,14 @@ let GameGrid = React.createClass({
         return generateGameGrid(this.state.gameGrid, this, this.state.winCoordinates);
     },
     render: function () {
-        if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
-            return <div>
+        return <div>
+            <div>
                 <a className="waves-effect waves-light btn" data-player="0" onClick={this.choosePlayer}>Start First</a>
                 <a className="waves-effect waves-light btn" data-player="1" onClick={this.choosePlayer}>Start Second</a>
             </div>
-        }
-
-        return <div>
             {this.generateGameGrid()}
             {this.maybeShowLoader()}
             {this.maybeShowWinnerText()}
-            <a className="waves-effect waves-light btn" onClick={this.newGame}>New Game</a>
         </div>;
     }
 });
