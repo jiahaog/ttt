@@ -1,6 +1,6 @@
 # Tic-Tac-Toe
 
-![build status](https://travis-ci.org/jiahaog/tictactoe.svg)
+[![Build Status](https://travis-ci.org/jiahaog/tictactoe.svg?branch=master)](https://travis-ci.org/jiahaog/tictactoe)
 
 A Tic-Tac-Toe game with React and an unbeatable AI.
 
@@ -79,7 +79,3 @@ $ gulp watch
 # deployment to GitHub Pages
 $ gulp build && gulp deploy
 ```
-
-## Todo
-- Banter
-- WebWorkers
