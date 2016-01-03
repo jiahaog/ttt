@@ -101,14 +101,11 @@ class TicTacToe {
 
 class WinnerData {
     /**
-     * @namespace winnerData
-     * @property {int|string} winnerNumber
-     * @property {string} winnerName
-     */
-    /**
      * @param {[]} players
-     * @param {int} winnerNumber
-     * @returns {winnerData}
+     * @param {int|string} winnerNumber or 'draw'
+     * @returns {{}} result
+     * @property result.winnerNumber
+     * @property result.winnerName
      */
     constructor(players, winnerNumber) {
         if (winnerNumber === 'draw') {
