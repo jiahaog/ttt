@@ -116,10 +116,7 @@ let GameGrid = React.createClass({
         if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
             return ''
         }
-
-        return <div className="progress">
-            <div className="indeterminate"></div>
-        </div>
+        return preloader();
     },
     generateGameGrid: function () {
         return generateGameGrid(this.state.gameGrid, this, this.state.winCoordinates);
@@ -241,4 +238,50 @@ function generateGameCellId(i, j) {
 
 function generateGameCellLabelId(i, j) {
     return `game-cell-label-${i}-${j}`;
+}
+
+function preloader() {
+    return <div className="center-align row">
+        <div className="preloader-wrapper active">
+            <div className="spinner-layer spinner-blue">
+                <div className="circle-clipper left">
+                    <div className="circle"></div>
+                </div><div className="gap-patch">
+                <div className="circle"></div>
+            </div><div className="circle-clipper right">
+                <div className="circle"></div>
+            </div>
+            </div>
+
+            <div className="spinner-layer spinner-red">
+                <div className="circle-clipper left">
+                    <div className="circle"></div>
+                </div><div className="gap-patch">
+                <div className="circle"></div>
+            </div><div className="circle-clipper right">
+                <div className="circle"></div>
+            </div>
+            </div>
+
+            <div className="spinner-layer spinner-yellow">
+                <div className="circle-clipper left">
+                    <div className="circle"></div>
+                </div><div className="gap-patch">
+                <div className="circle"></div>
+            </div><div className="circle-clipper right">
+                <div className="circle"></div>
+            </div>
+            </div>
+
+            <div className="spinner-layer spinner-green">
+                <div className="circle-clipper left">
+                    <div className="circle"></div>
+                </div><div className="gap-patch">
+                <div className="circle"></div>
+            </div><div className="circle-clipper right">
+                <div className="circle"></div>
+            </div>
+            </div>
+        </div>
+    </div>
 }
