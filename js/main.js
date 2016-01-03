@@ -20823,9 +20823,9 @@ function makeMove(grid, move, player) {
 }
 
 function score(grid, activePlayer, depth) {
-    var winner = (0, _checkWin2.default)(grid);
-    if (winner !== null) {
-        if (winner === activePlayer) {
+    var winResult = (0, _checkWin2.default)(grid);
+    if (winResult && winResult.winner !== null) {
+        if (winResult.winner === activePlayer) {
             return 10 - depth;
         } else {
             return -10 - depth;
@@ -20961,20 +20961,21 @@ var Board = (function () {
             // valid move
             if (this._markPlayerMove(player, coordinates)) {
                 this.moveCount += 1;
-                var winner = (0, _checkWin2.default)(this.grid, this.moveCount);
+                var winnerResult = (0, _checkWin2.default)(this.grid, this.moveCount);
+
                 // need to check for null because a winning player can be int value 0
-                if (winner !== null) {
-                    this.gameOver(winner);
+                if (winnerResult && winnerResult.winner !== null) {
+                    this.gameOver(winnerResult.winner, winnerResult.winCoordinates);
                 }
             }
             return true;
         }
     }, {
         key: 'gameOver',
-        value: function gameOver(winner) {
+        value: function gameOver(winner, winCoordinates) {
             this.gameWinner = winner;
             if (this.gameOverCallback) {
-                this.gameOverCallback(winner);
+                this.gameOverCallback(winner, winCoordinates);
             }
         }
     }, {
@@ -21045,105 +21046,115 @@ var _underscore2 = _interopRequireDefault(_underscore);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- *
  * @param {[[]]} grid
- * @returns {number|string|null} the winning player, 'draw' or null
+ * @param {int} [moveCount]
+ * @returns {{}|null} winning result or null if no winner
  */
 function checkWin(grid, moveCount) {
-
-    var winners = {};
-    // check rows
-    checkRowsOrColumns(0, grid, winners);
-    checkRowsOrColumns(1, grid, winners);
-    checkDiagonals(0, grid, winners);
-    checkDiagonals(1, grid, winners);
-
-    if (_underscore2.default.size(winners) > 0) {
-        var finalWinner = 0;
-        _underscore2.default.each(winners, function (value, winner) {
-            // only get one winner from the list
-            // need to parse int because object keys is a string
-            finalWinner = parseInt(winner);
-        });
-        return finalWinner;
-    } else {
-        if (moveCount === grid.length * grid.length) {
-            return 'draw'; // todo might have problems with string token used
+    for (var selector = 0; selector < 4; selector++) {
+        var result = checkRowColumnDiagonal(selector, grid);
+        if (result) {
+            return result;
         }
+    }
+
+    if (moveCount === grid.length * grid.length) {
+        return makeCheckResult('draw', null); // todo might have problems with string token used
+    }
+
+    return null;
+}
+
+/**
+ *
+ * @param {int} selector 0 - Rows,
+ *                            1 - columns,
+ *                            2 - TL-BR,
+ *                            3 - BL-TR
+ * @param {[[]]} grid
+ * @returns {{}|null} winner result or null
+ */
+function checkRowColumnDiagonal(selector, grid) {
+    var iterations = grid.length;
+
+    if (selector === 2 || selector === 3) {
+        // diagonals only need one iteration
+        iterations = 1;
+    }
+
+    for (var j = 0; j < iterations; j++) {
+        var consecutiveToCheck = [];
+        var correspondingCoords = [];
+
+        var rowOrColumn = grid[j];
+        for (var i = 0; i < rowOrColumn.length; i++) {
+            var currentCoords = undefined;
+
+            switch (selector) {
+                case 0:
+                    currentCoords = [i, j];
+                    break;
+                case 1:
+                    currentCoords = [j, i];
+                    break;
+                case 2:
+                    currentCoords = [i, i];
+                    break;
+                case 3:
+                    currentCoords = [grid.length - 1 - i, i];
+                    break;
+                default:
+                    throw 'Invalid check row or column or diagonal selector';
+                    break;
+            }
+
+            var currentCell = grid[currentCoords[1]][currentCoords[0]];
+            consecutiveToCheck.push(currentCell);
+            correspondingCoords.push(currentCoords);
+        }
+
+        var winner = checkVector(consecutiveToCheck);
+        if (winner !== null) {
+            return makeCheckResult(winner, correspondingCoords);
+        }
+    }
+
+    return null;
+}
+
+/**
+ *
+ * @param {int|string} winner int or 'draw'
+ * @param {[[]]|null} winCoordinates
+ */
+function makeCheckResult(winner, winCoordinates) {
+    return {
+        winner: winner,
+        winCoordinates: winCoordinates
+    };
+}
+
+/**
+ *
+ * @param {[]} vector
+ * @returns {int|null} winner
+ */
+function checkVector(vector) {
+    var noNull = vector.every(function (cell) {
+        return cell !== null;
+    });
+
+    if (!noNull) {
         return null;
     }
-}
+    // no duplicates
+    var unique = _underscore2.default.uniq(vector);
+    var noDuplicates = unique.length === 1;
 
-/**
- *
- * @param {int} rowsOrColumns  0 - Rows, 1 - columns
- * @param {[[]]} grid
- * @param {{}} winners
- */
-function checkRowsOrColumns(rowsOrColumns, grid, winners) {
-    // check rows
-    for (var j = 0; j < grid.length; j++) {
-        var consecutive = {};
-        for (var i = 0; i < grid[j].length; i++) {
-            var current = undefined;
-            if (rowsOrColumns === 0) {
-                current = grid[j][i];
-            } else {
-                current = grid[i][j];
-            }
-
-            if (current === null) {
-                // skip zero valued position
-                continue;
-            }
-
-            if (consecutive[current]) {
-                consecutive[current] += 1;
-            } else {
-                consecutive[current] = 1;
-            }
-        }
-
-        _underscore2.default.forEach(consecutive, function (value, key) {
-            if (value === grid.length) {
-                winners[key] = 1;
-            }
-        });
+    if (!noDuplicates) {
+        return null;
     }
-}
-
-/**
- *
- * @param {int} selector  0 - TL-BR, 1 - BL-TR
- * @param {[[]]} grid
- * @param {{}} winners
- */
-function checkDiagonals(selector, grid, winners) {
-    var consecutive = {};
-    for (var i = 0; i < grid.length; i++) {
-        var current = undefined;
-        if (selector === 0) {
-            current = grid[i][i];
-        } else {
-            current = grid[grid.length - 1 - i][i];
-        }
-
-        if (current === null) {
-            // skip zero valued position
-            continue;
-        }
-
-        if (consecutive[current]) {
-            consecutive[current] += 1;
-        } else {
-            consecutive[current] = 1;
-        }
-    }
-    _underscore2.default.forEach(consecutive, function (value, key) {
-        if (value === grid.length) {
-            winners[key] = 1;
-        }
-    });
+    return unique[0];
 }
 
 exports.default = checkWin;
@@ -21208,9 +21219,9 @@ var TicTacToe = (function () {
             this.currentTurn = 0;
             this.gameOver = false;
 
-            this.board.onGameOver(function (winnerNumber) {
+            this.board.onGameOver(function (winnerNumber, winCoordinates) {
                 _this.gameOver = true;
-                var winnerData = new WinnerData(_this.players, winnerNumber);
+                var winnerData = new WinnerData(_this.players, winnerNumber, winCoordinates);
 
                 _this.players.forEach(function (player) {
                     player.notifyGameOver(winnerData);
@@ -21230,26 +21241,24 @@ var TicTacToe = (function () {
          * @returns {boolean} validity of the move
          */
         value: function makeMove(playerNumber, moveCoordinates) {
-            try {
-                if (this.gameOver) {
-                    throw 'Game is not running, cannot make move';
-                }
 
-                if (this.currentPlayerTurn !== playerNumber) {
-                    throw 'Not your turn! Current turn is player: ' + this.currentPlayerTurn;
-                }
-
-                var validMove = this.board.makeMove(playerNumber, moveCoordinates);
-
-                if (!validMove) {
-                    throw 'Move is invalid!';
-                }
-
-                this.currentTurn += 1;
-                this._notifyPlayers();
-            } catch (exception) {
-                throw exception;
+            if (this.gameOver) {
+                throw 'Game is not running, cannot make move';
             }
+
+            if (this.currentPlayerTurn !== playerNumber) {
+                throw 'Not your turn! Current turn is player: ' + this.currentPlayerTurn;
+            }
+
+            var validMove = this.board.makeMove(playerNumber, moveCoordinates);
+
+            if (!validMove) {
+                throw 'Move is invalid!';
+            }
+
+            this.currentTurn += 1;
+            this._notifyPlayers();
+
             return true;
         }
     }, {
@@ -21286,22 +21295,25 @@ var WinnerData =
 /**
  * @param {[]} players
  * @param {int|string} winnerNumber or 'draw'
+ * @param {[]|null} winCoordinates
  * @returns {{}} result
  * @property result.winnerNumber
  * @property result.winnerName
  */
-function WinnerData(players, winnerNumber) {
+function WinnerData(players, winnerNumber, winCoordinates) {
     _classCallCheck(this, WinnerData);
 
     if (winnerNumber === 'draw') {
         return {
             winnerNumber: 'draw',
-            winnerName: 'draw'
+            winnerName: 'draw',
+            winCoordinates: null
         };
     }
     return {
         winnerNumber: winnerNumber,
-        winnerName: getWinnerName(players, winnerNumber)
+        winnerName: getWinnerName(players, winnerNumber),
+        winCoordinates: winCoordinates
     };
 };
 
@@ -21668,11 +21680,14 @@ var gameStates = {
     GAME_OVER: 'STATE_GAME_OVER'
 };
 
+var emptyGrid = [[null, null, null], [null, null, null], [null, null, null]];
+
 var newGameReactState = {
     gameState: gameStates.CHOOSE_PLAYER,
     myTurn: false,
-    gameGrid: null,
-    winnerName: null
+    gameGrid: emptyGrid,
+    winnerName: null,
+    winCoordinates: null
 };
 
 var GameGrid = _react2.default.createClass({
@@ -21700,12 +21715,13 @@ var GameGrid = _react2.default.createClass({
             });
         }
     },
-    newGame: function newGame(event) {
+    newGame: function newGame() {
         this.setState(_underscore2.default.clone(newGameReactState));
     },
     choosePlayer: function choosePlayer(event) {
         var _this = this;
 
+        this.newGame();
         var playerChosen = parseInt(event.target.dataset.player);
 
         var game = new _index2.default.TicTacToe();
@@ -21727,7 +21743,8 @@ var GameGrid = _react2.default.createClass({
         clientPlayer.onGameOver(function (winnerData) {
             _this.setState({
                 gameState: gameStates.GAME_OVER,
-                winnerName: winnerData.winnerName
+                winnerName: winnerData.winnerName,
+                winCoordinates: winnerData.winCoordinates
             });
         });
 
@@ -21752,64 +21769,49 @@ var GameGrid = _react2.default.createClass({
 
         var winnerName = this.state.winnerName;
 
+        var winnerText = undefined;
         if (winnerName === 'draw') {
-            return _react2.default.createElement(
-                'div',
-                null,
-                'It\'s a draw!'
-            );
+            winnerText = 'draw';
         } else {
-            return _react2.default.createElement(
-                'div',
-                null,
-                winnerName,
-                ' wins!'
-            );
+            winnerText = 'You Lose';
         }
+
+        return _react2.default.createElement(
+            'div',
+            { className: 'game-winner-text page-text center-align' },
+            winnerText
+        );
     },
     maybeShowLoader: function maybeShowLoader() {
         if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
             return '';
         }
-
-        return _react2.default.createElement(
-            'div',
-            { className: 'progress' },
-            _react2.default.createElement('div', { className: 'indeterminate' })
-        );
+        return preloader();
     },
     generateGameGrid: function generateGameGrid() {
-        return _generateGameGrid(this.state.gameGrid, this);
+        return _generateGameGrid(this.state.gameGrid, this, this.state.winCoordinates);
     },
     render: function render() {
-        if (this.state.gameState === gameStates.CHOOSE_PLAYER) {
-            return _react2.default.createElement(
+        return _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
                 'div',
-                null,
+                { className: 'game-button-group center-align row' },
                 _react2.default.createElement(
                     'a',
-                    { className: 'waves-effect waves-light btn', 'data-player': '0', onClick: this.choosePlayer },
+                    { className: 'game-button waves-effect waves-teal btn-flat', 'data-player': '0', onClick: this.choosePlayer },
                     'Start First'
                 ),
                 _react2.default.createElement(
                     'a',
-                    { className: 'waves-effect waves-light btn', 'data-player': '1', onClick: this.choosePlayer },
+                    { className: 'game-button waves-effect waves-teal btn-flat', 'data-player': '1', onClick: this.choosePlayer },
                     'Start Second'
                 )
-            );
-        }
-
-        return _react2.default.createElement(
-            'div',
-            null,
+            ),
             this.generateGameGrid(),
             this.maybeShowLoader(),
-            this.maybeShowWinnerText(),
-            _react2.default.createElement(
-                'a',
-                { className: 'waves-effect waves-light btn', onClick: this.newGame },
-                'New Game'
-            )
+            this.maybeShowWinnerText()
         );
     }
 });
@@ -21823,42 +21825,53 @@ function parseGameCellId(id) {
     });
 }
 
-function _generateGameGrid(grid, rootComponent) {
+function _generateGameGrid(grid, rootComponent, winCoordinates) {
+    var gridStyle = undefined;
+    if (rootComponent.state.gameState === gameStates.CHOOSE_PLAYER) {
+        gridStyle = 'game-cell-disabled game-grid';
+    } else {
+        gridStyle = 'game-grid';
+    }
     return _react2.default.createElement(
         'div',
-        { className: 'game-grid' },
-        generateGameRows(grid, rootComponent)
+        { className: gridStyle },
+        generateGameRows(grid, rootComponent, winCoordinates)
     );
 }
 
-function generateGameRows(grid, rootComponent) {
+function generateGameRows(grid, rootComponent, winCoordinates) {
     return grid.map(function (row, rowNumber) {
         return _react2.default.createElement(
             'div',
             { className: 'game-row', key: rowNumber },
-            generateGameCells(row, rowNumber, rootComponent)
+            generateGameCells(row, rowNumber, rootComponent, winCoordinates)
         );
     });
 }
 
-function generateGameCells(row, rowNumber, rootComponent) {
+function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
     var COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
 
-    function cellStyle(isCellOccupied) {
+    function cellStyle(isCellOccupied, cellPartOfWinCoordinates) {
         var myTurn = rootComponent.state.myTurn;
         var cellIsOccupied = isCellOccupied;
         var gameInProgress = rootComponent.state.gameState === gameStates.GAME_IN_PROGRESS;
 
         if (!gameInProgress) {
+
+            if (cellPartOfWinCoordinates) {
+                return 'game-cell-winning ' + COMMON_CELL_STYLES;
+            }
+
             return COMMON_CELL_STYLES;
         }
 
         if (cellIsOccupied) {
-            return 'game-cell-disabled ' + COMMON_CELL_STYLES; // gameInProgress && cellOccupied
+            return COMMON_CELL_STYLES; // gameInProgress && cellOccupied
         }
 
         if (myTurn) {
-            return 'hoverable ' + COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && myTurn
+            return 'waves-effect waves-teal hoverable ' + COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && myTurn
         }
 
         return COMMON_CELL_STYLES; // gameInProgress && !cellOccupied && !myTurn
@@ -21866,17 +21879,53 @@ function generateGameCells(row, rowNumber, rootComponent) {
 
     return row.map(function (cell, columnNumber) {
         var isCellOccupied = isCellFilled(cell);
+        var cellPartOfWinCoordinates = arrayContainsArray([columnNumber, rowNumber], winCoordinates);
+
         return _react2.default.createElement(
             'div',
             { key: columnNumber, id: generateGameCellId(columnNumber, rowNumber),
-                className: cellStyle(isCellOccupied), onClick: rootComponent.cellClicked },
+                className: cellStyle(isCellOccupied, cellPartOfWinCoordinates), onClick: rootComponent.cellClicked },
             _react2.default.createElement(
                 'span',
                 { id: generateGameCellLabelId(columnNumber, rowNumber),
                     className: 'game-cell-label center-align valign' },
-                cell
+                gridText(cell)
             )
         );
+    });
+}
+
+function gridText(text) {
+    if (text === null) {
+        return '';
+    }
+
+    if (text === 1) {
+        return _react2.default.createElement(
+            'div',
+            { className: 'cell-marker' },
+            '◯'
+        );
+    } else {
+        return _react2.default.createElement(
+            'div',
+            { className: 'cell-marker' },
+            '╳'
+        );
+    }
+}
+
+/**
+ * @param smallArray
+ * @param [nestedArray]
+ * @returns {boolean}
+ */
+function arrayContainsArray(smallArray, nestedArray) {
+    if (!nestedArray) {
+        return false;
+    }
+    return nestedArray.some(function (checkCoords) {
+        return _underscore2.default.isEqual(smallArray, checkCoords);
     });
 }
 
@@ -21895,6 +21944,36 @@ function generateGameCellId(i, j) {
 
 function generateGameCellLabelId(i, j) {
     return 'game-cell-label-' + i + '-' + j;
+}
+
+function preloader() {
+    return _react2.default.createElement(
+        'div',
+        { className: 'center-align row' },
+        _react2.default.createElement(
+            'div',
+            { className: 'preloader-wrapper active' },
+            _react2.default.createElement(
+                'div',
+                { className: 'spinner-layer' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'circle-clipper left' },
+                    _react2.default.createElement('div', { className: 'circle' })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'gap-patch' },
+                    _react2.default.createElement('div', { className: 'circle' })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'circle-clipper right' },
+                    _react2.default.createElement('div', { className: 'circle' })
+                )
+            )
+        )
+    );
 }
 
 },{"./game/index.js":168,"react":158,"react-dom":29,"underscore":159}]},{},[172])
