@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import gameApi from './game/index.js';
-const PerfectPlayer = gameApi.players.PerfectPlayer;
+const PerfectPlayer = gameApi.players.PerfectPlayerWeb;
 const Player = gameApi.players.Player;
 
 

@@ -44,6 +44,7 @@
     ]
   },
   "dependencies": {
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "webworkify": "^1.1.0"
   }
 }

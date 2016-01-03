@@ -8,7 +8,7 @@ A Tic-Tac-Toe game with React and an unbeatable AI.
 
 I wanted to implement a pure client side Javascript version of a [Tic-Tac-Toe AI](http://neverstopbuilding.com/minimax) with the Minimax algorithm.
 
-I ended up trying to figure out ES6 with Babel, Gulp and React in addition to that.
+I ended up trying to figure out ES6 with Babel, Gulp, React and Web Workers in addition to that.
 
 ## Usage
 
