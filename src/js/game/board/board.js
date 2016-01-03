@@ -44,6 +44,7 @@ class Board {
             }
         } catch (exception) {
             console.error(exception);
+            return false;
         }
         return true;
     }
