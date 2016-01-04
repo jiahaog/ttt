@@ -131,8 +131,8 @@ class Game extends React.Component {
     }
 
     render() {
-        return <div className="tall-container-grow tall-container-wrapper">
-            <div className="game-button-group center-align tall-container-shrink">
+        return <div className="tall-container-grow">
+            <div className="game-button-group center-align">
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="0" onClick={this.choosePlayer}>Start First</a>
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="1" onClick={this.choosePlayer}>Start Second</a>
             </div>
