@@ -11,8 +11,8 @@ html, body {
 }
 @media (max-height: 568px) {
   .game-cell {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     margin: 10px;
   }
 }
@@ -61,6 +61,12 @@ html, body {
   letter-spacing: 10px;
 }
 
+@media (max-height: 568px) {
+  .game-winner-text {
+    font-size: 20px;
+  }
+}
+
 .page-text {
   font-weight: 100;
   text-transform: uppercase;
@@ -68,6 +74,14 @@ html, body {
 
 .page-title {
   letter-spacing: 20px;
+}
+
+@media (max-height: 568px) {
+  .page-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 }
 
 .cell-marker {
@@ -112,6 +126,6 @@ html, body {
 }
 
 .game-footer {
-  padding-top: 20px;
+  padding-top: 40px;
   height: 30%;
 }
