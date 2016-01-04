@@ -64,7 +64,7 @@ gulp.task('js', ['test'], () => {
 gulp.task('useref', () => {
     return gulp.src('src/*.html')
         .pipe(useref())
-        .pipe(gulpif('*.less', less()))
+        .pipe(gulpif('*.css', less())) // compile all .css with less()
         .pipe(gulp.dest('dist'))
         .pipe(browserSync.reload({
             stream: true
