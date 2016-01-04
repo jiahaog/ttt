@@ -5,15 +5,29 @@ html, body {
 }
 
 .game-cell {
-  width: 100px;
-  height: 100px;
+  width: 25vw;
+  height: 25vw;
+  max-width: 100px;
+  max-height: 100px;
   margin: 15px;
 }
-@media (max-height: 568px) {
+
+@media (max-height: 768px) {
   .game-cell {
-    width: 75px;
-    height: 75px;
     margin: 10px;
+  }
+  .game-winner-text {
+    font-size: 20px;
+  }
+  .page-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .github-corner {
+    width: 50px;
+    height: 50px;
   }
 }
 
@@ -61,12 +75,6 @@ html, body {
   letter-spacing: 10px;
 }
 
-@media (max-height: 568px) {
-  .game-winner-text {
-    font-size: 20px;
-  }
-}
-
 .page-text {
   font-weight: 100;
   text-transform: uppercase;
@@ -74,19 +82,6 @@ html, body {
 
 .page-title {
   letter-spacing: 20px;
-}
-
-@media (max-height: 568px) {
-  .page-title {
-    font-size: 30px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .github-corner {
-    width: 40px;
-    height: 40px;
-  }
 }
 
 .cell-marker {
