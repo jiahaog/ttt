@@ -27,11 +27,13 @@ const newGameReactState = {
     winCoordinates: null
 };
 
-let Game = React.createClass({
-    getInitialState: function () {
-        return _.clone(newGameReactState);
-    },
-    onCellClick: function (event) {
+class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = _.clone(newGameReactState);
+    }
+
+    onCellClick = (event) => {
         if (!this.state.myTurn) {
             return;
         }
@@ -49,11 +51,13 @@ let Game = React.createClass({
                 myTurn: true
             });
         }
-    },
-    newGame: function () {
+    }
+
+    newGame = () => {
         this.setState(_.clone(newGameReactState));
-    },
-    choosePlayer: function (event) {
+    }
+
+    choosePlayer = (event) => {
         this.newGame();
         const playerChosen = parseInt(event.target.dataset.player);
 
@@ -94,8 +98,9 @@ let Game = React.createClass({
             gameState: gameStates.GAME_IN_PROGRESS,
             player: clientPlayer
         });
-    },
-    maybeShowWinnerText: function () {
+    }
+
+    maybeShowWinnerText = () => {
         if (this.state.gameState !== gameStates.GAME_OVER) {
             return;
         }
@@ -112,17 +117,20 @@ let Game = React.createClass({
         return <div className="game-winner-text page-text center-align">
             {winnerText}
         </div>
-    },
-    maybeShowLoader: function () {
+    }
+
+    maybeShowLoader = () => {
         if (this.state.myTurn || this.state.gameState !== gameStates.GAME_IN_PROGRESS) {
             return ''
         }
         return preloader();
-    },
-    generateGameGrid: function () {
+    }
+
+    generateGameGrid = () => {
         return generateGameGrid(this.state.gameGrid, this.state.myTurn, this.state.gameState, this.state.winCoordinates, this.onCellClick);
-    },
-    render: function () {
+    }
+
+    render() {
         return <div>
             <div className="game-button-group center-align row">
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="0" onClick={this.choosePlayer}>Start First</a>
@@ -135,7 +143,7 @@ let Game = React.createClass({
             {this.maybeShowWinnerText()}
         </div>;
     }
-});
+}
 
 //let GameGrid = React.createClass({
 //
