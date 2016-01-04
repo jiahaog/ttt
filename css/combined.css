@@ -2851,15 +2851,27 @@ body {
   height: 100%;
 }
 .game-cell {
-  width: 100px;
-  height: 100px;
+  width: 25vw;
+  height: 25vw;
+  max-width: 100px;
+  max-height: 100px;
   margin: 15px;
 }
-@media (max-height: 568px) {
+@media (max-height: 768px) {
   .game-cell {
-    width: 80px;
-    height: 80px;
     margin: 10px;
+  }
+  .game-winner-text {
+    font-size: 20px;
+  }
+  .page-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .github-corner {
+    width: 50px;
+    height: 50px;
   }
 }
 .game-grid {
@@ -2898,8 +2910,8 @@ body {
   background-color: #FF8A80;
 }
 .game-button-group {
-  margin-top: 5%;
-  margin-bottom: 5%;
+  margin-top: 2%;
+  margin-bottom: 2%;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -2957,9 +2969,6 @@ body {
   -webkit-flex-grow: 0;
   -ms-flex-positive: 0;
   flex-grow: 0;
-  -webkit-flex-shrink: 1;
-  -ms-flex-negative: 1;
-  flex-shrink: 1;
   -webkit-flex-basis: auto;
   -ms-flex-preferred-size: auto;
   flex-basis: auto;
@@ -2977,5 +2986,4 @@ body {
 }
 .game-footer {
   padding-top: 20px;
-  height: 30%;
 }
