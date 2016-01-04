@@ -1,23 +1,34 @@
 @color-material-grey: #757575;
 
+html, body {
+  height: 100%;
+}
+
 .game-cell {
   width: 100px;
   height: 100px;
-  margin: 10px;
+  margin: 15px;
+}
+@media (max-height: 568px) {
+  .game-cell {
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+  }
 }
 
 .game-grid {
-  margin-top: 5%;
-  margin-bottom: 5%;
   display: flex;
-  width: auto;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
 .game-row {
+  align-items: center;
   display: flex;
   flex-direction: row;
+  height: 30%;
 }
 
 .game-cell-label {
@@ -82,4 +93,27 @@
 .example-leave.example-leave-active {
   opacity: 0.01;
   transition: opacity 300ms ease-in;
+}
+
+.tall-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tall-container-shrink {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+}
+
+.tall-container-grow {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+}
+
+.game-footer {
+  padding-top: 20px;
+  height: 30%;
 }

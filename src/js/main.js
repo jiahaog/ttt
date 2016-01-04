@@ -131,16 +131,18 @@ class Game extends React.Component {
     }
 
     render() {
-        return <div>
-            <div className="game-button-group center-align row">
+        return <div className="tall-container-grow tall-container-wrapper">
+            <div className="game-button-group center-align tall-container-shrink">
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="0" onClick={this.choosePlayer}>Start First</a>
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="1" onClick={this.choosePlayer}>Start Second</a>
             </div>
             {this.generateGameGrid()}
-            <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-                {this.maybeShowLoader()}
-            </ReactCSSTransitionGroup>
-            {this.maybeShowWinnerText()}
+            <div className="game-footer">
+                <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+                    {this.maybeShowLoader()}
+                    {this.maybeShowWinnerText()}
+                </ReactCSSTransitionGroup>
+            </div>
         </div>;
     }
 }
@@ -162,11 +164,12 @@ function parseGameCellId(id) {
 }
 
 function generateGameGrid(grid, isMyTurn, gameState, winCoordinates, onClickCallback) {
+    const GRID_DEFAULT_STYLES = 'game-grid center-align tall-container-grow';
     let gridStyle;
     if (gameState === gameStates.CHOOSE_PLAYER) {
-        gridStyle = 'game-cell-disabled game-grid';
+        gridStyle = `game-cell-disabled ${GRID_DEFAULT_STYLES}`;
     } else {
-        gridStyle = 'game-grid';
+        gridStyle = GRID_DEFAULT_STYLES;
     }
     return <div className={gridStyle}>
             {generateGameRows(grid, isMyTurn, gameState, winCoordinates, onClickCallback)}
