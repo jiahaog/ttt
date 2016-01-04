@@ -14,6 +14,7 @@ import ghPages from 'gulp-gh-pages';
 import uglify from 'gulp-uglify';
 import useref from 'gulp-useref';
 import gulpif from 'gulp-if';
+import autoprefixer from 'gulp-autoprefixer';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -60,11 +61,14 @@ gulp.task('js', ['test'], () => {
     return compileJs();
 });
 
-
 gulp.task('useref', () => {
     return gulp.src('src/*.html')
         .pipe(useref())
-        .pipe(gulpif('*.css', less())) // compile all .css with less()
+        .pipe(gulpif('*.css', less())) // compile all .css with less() http://stackoverflow.com/questions/27627936/compiling-less-using-gulp-useref-and-gulp-less
+        .pipe(gulpif('*.css', autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        })))
         .pipe(gulp.dest('dist'))
         .pipe(browserSync.reload({
             stream: true
