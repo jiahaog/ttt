@@ -170,7 +170,7 @@ function generateGameRows(grid, rootComponent, winCoordinates) {
 }
 
 function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
-    const COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
+    const COMMON_CELL_STYLES = 'animated fadeInDown game-cell card valign-wrapper';
 
     function cellStyle(isCellOccupied, cellPartOfWinCoordinates) {
         const myTurn = rootComponent.state.myTurn;

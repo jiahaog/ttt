@@ -12,6 +12,8 @@ import less from 'gulp-less';
 import browserSync from 'browser-sync';
 import ghPages from 'gulp-gh-pages';
 import uglify from 'gulp-uglify';
+import useref from 'gulp-useref';
+import gulpif from 'gulp-if';
 
 function compileJs(watch) {
     var bundler = browserify('./src/js/main.js', { debug: true }).transform(babel);
@@ -58,18 +60,12 @@ gulp.task('js', ['test'], () => {
     return compileJs();
 });
 
-gulp.task('pages', () => {
-    return gulp.src('./src/**/*.html')
-        .pipe(gulp.dest('./dist/'))
-        //.pipe(browserSync.reload({
-        //    stream: true
-        //}));
-});
 
-gulp.task('less', () => {
-    return gulp.src('./src/less/**/*.less')
-        .pipe(less())
-        .pipe(gulp.dest('./dist/css'))
+gulp.task('useref', () => {
+    return gulp.src('src/*.html')
+        .pipe(useref())
+        .pipe(gulpif('*.less', less()))
+        .pipe(gulp.dest('dist'))
         .pipe(browserSync.reload({
             stream: true
         }));
@@ -82,7 +78,7 @@ gulp.task('clean', callback => {
 });
 
 gulp.task('build', callback => {
-    runSequence('clean', ['less', 'pages', 'js'], callback);
+    runSequence('clean', ['useref', 'js'], callback);
 });
 
 gulp.task('browserSync', () => {
@@ -94,10 +90,10 @@ gulp.task('browserSync', () => {
     })
 });
 
-gulp.task('watch', ['browserSync', 'less', 'test', 'pages'], () => {
+gulp.task('watch', ['browserSync', 'useref', 'test'], () => {
     watchJs();
-    gulp.watch('src/less/**/*.less', ['less']);
-    gulp.watch('src/**/*.html', ['pages']).on('change', browserSync.reload);
+    gulp.watch('src/less/**/*.less', ['useref']);
+    gulp.watch('src/**/*.html', ['useref']);
 });
 
 gulp.task('deploy', () => {
