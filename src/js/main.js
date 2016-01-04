@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import _ from 'underscore';
 
 import gameApi from './game/index.js';
@@ -26,11 +27,11 @@ const newGameReactState = {
     winCoordinates: null
 };
 
-let GameGrid = React.createClass({
+let Game = React.createClass({
     getInitialState: function () {
         return _.clone(newGameReactState);
     },
-    cellClicked: function (event) {
+    onCellClick: function (event) {
         if (!this.state.myTurn) {
             return;
         }
@@ -119,7 +120,7 @@ let GameGrid = React.createClass({
         return preloader();
     },
     generateGameGrid: function () {
-        return generateGameGrid(this.state.gameGrid, this, this.state.winCoordinates);
+        return generateGameGrid(this.state.gameGrid, this.state.myTurn, this.state.gameState, this.state.winCoordinates, this.onCellClick);
     },
     render: function () {
         return <div>
@@ -128,14 +129,19 @@ let GameGrid = React.createClass({
                 <a className="game-button waves-effect waves-teal btn-flat" data-player="1" onClick={this.choosePlayer}>Start Second</a>
             </div>
             {this.generateGameGrid()}
-            {this.maybeShowLoader()}
+            <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+                {this.maybeShowLoader()}
+            </ReactCSSTransitionGroup>
             {this.maybeShowWinnerText()}
         </div>;
     }
 });
 
+//let GameGrid = React.createClass({
+//
+//});
 ReactDOM.render(
-    <GameGrid />,
+    <Game />,
     document.getElementById('game-react-container')
 );
 
@@ -147,35 +153,32 @@ function parseGameCellId(id) {
         });
 }
 
-function generateGameGrid(grid, rootComponent, winCoordinates) {
+function generateGameGrid(grid, isMyTurn, gameState, winCoordinates, onClickCallback) {
     let gridStyle;
-    if (rootComponent.state.gameState === gameStates.CHOOSE_PLAYER) {
+    if (gameState === gameStates.CHOOSE_PLAYER) {
         gridStyle = 'game-cell-disabled game-grid';
     } else {
         gridStyle = 'game-grid';
     }
-    return (
-        <div className={gridStyle}>
-            {generateGameRows(grid, rootComponent, winCoordinates)}
+    return <div className={gridStyle}>
+            {generateGameRows(grid, isMyTurn, gameState, winCoordinates, onClickCallback)}
         </div>
-    )
 }
 
-function generateGameRows(grid, rootComponent, winCoordinates) {
+function generateGameRows(grid, isMyTurn, gameState, winCoordinates, onClickCallback) {
     return grid.map((row, rowNumber) => {
         return <div className="game-row" key={rowNumber}>
-            {generateGameCells(row, rowNumber, rootComponent, winCoordinates)}
+            {generateGameCells(row, rowNumber, isMyTurn, gameState, winCoordinates, onClickCallback)}
         </div>
     })
 }
 
-function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
-    const COMMON_CELL_STYLES = 'animated fadeInDown game-cell card valign-wrapper';
+function generateGameCells(row, rowNumber, isMyTurn, gameState, winCoordinates, onClickCallback) {
+    const COMMON_CELL_STYLES = 'game-cell card valign-wrapper';
 
     function cellStyle(isCellOccupied, cellPartOfWinCoordinates) {
-        const myTurn = rootComponent.state.myTurn;
         const cellIsOccupied = isCellOccupied;
-        const gameInProgress = rootComponent.state.gameState === gameStates.GAME_IN_PROGRESS;
+        const gameInProgress = gameState === gameStates.GAME_IN_PROGRESS;
 
         if (!gameInProgress) {
 
@@ -190,7 +193,7 @@ function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
             return COMMON_CELL_STYLES; // gameInProgress && cellOccupied
         }
 
-        if (myTurn) {
+        if (isMyTurn) {
             return `waves-effect waves-teal hoverable ${COMMON_CELL_STYLES}`; // gameInProgress && !cellOccupied && myTurn
         }
 
@@ -202,7 +205,7 @@ function generateGameCells(row, rowNumber, rootComponent, winCoordinates) {
         const cellPartOfWinCoordinates = arrayContainsArray([columnNumber, rowNumber], winCoordinates);
 
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
-                    className={cellStyle(isCellOccupied, cellPartOfWinCoordinates)} onClick={rootComponent.cellClicked}>
+                    className={cellStyle(isCellOccupied, cellPartOfWinCoordinates)} onClick={onClickCallback}>
             <span id={generateGameCellLabelId(columnNumber, rowNumber)}
                   className="game-cell-label center-align valign">{gridText(cell)}</span>
         </div>
@@ -215,9 +218,13 @@ function gridText(text) {
     }
 
     if (text === 1) {
-        return <div className="cell-marker">◯</div>
+        return <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+            <div className="cell-marker">◯</div>
+        </ReactCSSTransitionGroup>
     } else {
-        return <div className="cell-marker">╳</div>
+        return <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+            <div className="cell-marker">╳</div>
+        </ReactCSSTransitionGroup>
     }
 }
 
