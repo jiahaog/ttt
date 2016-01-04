@@ -1,8 +1,8 @@
 {
   "name": "tictactoe",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A Tic-Tac-Toe game with React and an unbeatable AI.",
+  "main": "./src/js/game/index.js",
   "scripts": {
     "build": "babel src -d lib",
     "vs-ai": "node lib/js/game/implementation/vsAi.js",
@@ -10,7 +10,7 @@
     "test": "mocha --compilers js:babel-register",
     "watch": "babel --watch src -d lib"
   },
-  "author": "",
+  "author": "Goh Jia Hao",
   "license": "MIT",
   "devDependencies": {
     "async": "^1.5.0",
@@ -54,5 +54,23 @@
     "react-dom": "^0.14.5",
     "underscore": "^1.8.3",
     "webworkify": "^1.1.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiahaog/tictactoe.git"
+  },
+  "keywords": [
+    "es6",
+    "react",
+    "game",
+    "tictactoe",
+    "minimax"
+  ],
+  "bugs": {
+    "url": "https://github.com/jiahaog/tictactoe/issues"
+  },
+  "homepage": "https://github.com/jiahaog/tictactoe#readme"
 }
