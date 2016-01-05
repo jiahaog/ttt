@@ -1,37 +1,12 @@
 @color-material-grey: #757575;
 
+// set to full page unscrollable
+
 html, body {
   height: 100%;
 }
 
-.game-cell {
-  width: 25vw;
-  height: 25vw;
-  max-width: 100px;
-  max-height: 100px;
-  margin: 15px;
-  transition: background-color 0.5s ease;
-  justify-content: center;
-}
-
-@media (max-height: 768px) {
-  .game-cell {
-    margin: 10px;
-  }
-  .game-winner-text {
-    font-size: 20px;
-  }
-  .page-title {
-    font-size: 30px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .github-corner {
-    width: 50px;
-    height: 50px;
-  }
-}
+// game components
 
 .game-grid {
   display: flex;
@@ -44,6 +19,16 @@ html, body {
   align-items: center;
   display: flex;
   flex-direction: row;
+}
+
+.game-cell {
+  width: 25vw;
+  height: 25vw;
+  max-width: 100px;
+  max-height: 100px;
+  margin: 15px;
+  transition: background-color 0.5s ease;
+  justify-content: center;
 }
 
 .game-cell-label {
@@ -79,6 +64,12 @@ html, body {
   letter-spacing: 10px;
 }
 
+.game-footer {
+  padding-top: 20px;
+}
+
+// typography
+
 .page-text {
   font-weight: 100;
   text-transform: uppercase;
@@ -88,23 +79,7 @@ html, body {
   letter-spacing: 20px;
 }
 
-.example-enter {
-  opacity: 0.01;
-}
-
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
-
-.example-leave {
-  opacity: 1;
-}
-
-.example-leave.example-leave-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
-}
+// helpers
 
 .tall-container-wrapper {
   display: flex;
@@ -123,10 +98,43 @@ html, body {
   flex-basis: auto;
 }
 
-.game-footer {
-  padding-top: 20px;
+// mobile responsive
+
+@media (max-height: 768px) {
+  .game-cell {
+    margin: 10px;
+  }
+  .game-winner-text {
+    font-size: 20px;
+  }
+  .page-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .github-corner {
+    width: 50px;
+    height: 50px;
+  }
 }
 
-.divider {
-  max-width: g;
+// animations
+
+.animate-enter {
+  opacity: 0.01;
+}
+
+.animate-enter.animate-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.animate-leave {
+  opacity: 1;
+}
+
+.animate-leave.animate-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }

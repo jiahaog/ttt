@@ -140,7 +140,7 @@ class Game extends React.Component {
             </div>
             {this.generateGameGrid()}
             <div className="game-footer">
-                <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+                <ReactCSSTransitionGroup transitionName="animate" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
                     {this.maybeShowLoader()}
                     {this.maybeShowWinnerText()}
                 </ReactCSSTransitionGroup>
@@ -216,7 +216,7 @@ function generateGameCells(row, rowNumber, isMyTurn, gameState, winCoordinates, 
 
         return <div key={columnNumber} id={generateGameCellId(columnNumber, rowNumber)}
                     className={cellStyle(isCellOccupied, cellPartOfWinCoordinates)} onClick={onClickCallback}>
-            <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+            <ReactCSSTransitionGroup transitionName="animate" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
                 {generateGameCell(columnNumber, rowNumber, cellMarker)}
             </ReactCSSTransitionGroup>
         </div>
