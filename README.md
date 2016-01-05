@@ -146,7 +146,7 @@ $ npm install --global gulp
 
 #### Building
 ```bash
-$ git clone https://github.com/jiahaog/tictactoe.git
+$ git clone https://github.com/jiahaog/ttt.git
 $ cd ttt
 
 # Install dependencies
