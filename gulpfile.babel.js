@@ -14,6 +14,7 @@ import ghPages from 'gulp-gh-pages';
 import uglify from 'gulp-uglify';
 import useref from 'gulp-useref';
 import gulpif from 'gulp-if';
+import minifyCss from 'gulp-cssnano';
 import autoprefixer from 'gulp-autoprefixer';
 
 function compileJs(watch) {
@@ -69,6 +70,7 @@ gulp.task('useref', () => {
             browsers: ['last 2 versions'],
             cascade: false
         })))
+        .pipe(gulpif('*.css', minifyCss()))
         .pipe(gulp.dest('dist'))
         .pipe(browserSync.reload({
             stream: true
