@@ -2850,30 +2850,6 @@ html,
 body {
   height: 100%;
 }
-.game-cell {
-  width: 25vw;
-  height: 25vw;
-  max-width: 100px;
-  max-height: 100px;
-  margin: 15px;
-}
-@media (max-height: 768px) {
-  .game-cell {
-    margin: 10px;
-  }
-  .game-winner-text {
-    font-size: 20px;
-  }
-  .page-title {
-    font-size: 30px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  .github-corner {
-    width: 50px;
-    height: 50px;
-  }
-}
 .game-grid {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -2899,9 +2875,22 @@ body {
   -ms-flex-direction: row;
   flex-direction: row;
 }
+.game-cell {
+  width: 25vw;
+  height: 25vw;
+  max-width: 100px;
+  max-height: 100px;
+  margin: 15px;
+  transition: background-color 0.5s ease;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
 .game-cell-label {
   width: 100%;
-  font-size: 20px;
+  font-size: 1.7em;
+  font-weight: 600;
+  color: #757575;
 }
 .game-cell-disabled {
   opacity: 0.5;
@@ -2930,31 +2919,15 @@ body {
   font-size: 2em;
   letter-spacing: 10px;
 }
+.game-footer {
+  padding-top: 20px;
+}
 .page-text {
   font-weight: 100;
   text-transform: uppercase;
 }
 .page-title {
   letter-spacing: 20px;
-}
-.cell-marker {
-  font-size: 1.7em;
-  font-weight: 600;
-  color: #757575;
-}
-.example-enter {
-  opacity: 0.01;
-}
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
-.example-leave {
-  opacity: 1;
-}
-.example-leave.example-leave-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
 }
 .tall-container-wrapper {
   display: -webkit-flex;
@@ -2984,6 +2957,37 @@ body {
   -ms-flex-preferred-size: auto;
   flex-basis: auto;
 }
-.game-footer {
-  padding-top: 20px;
+@media (max-height: 768px) {
+  .game-cell {
+    margin: 10px;
+  }
+  .game-winner-text {
+    font-size: 20px;
+  }
+  .game-footer {
+    padding-top: 10px;
+  }
+  .page-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .github-corner {
+    width: 50px;
+    height: 50px;
+  }
+}
+.animate-enter {
+  opacity: 0.01;
+}
+.animate-enter.animate-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.animate-leave {
+  opacity: 1;
+}
+.animate-leave.animate-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
