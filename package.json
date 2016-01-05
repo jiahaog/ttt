@@ -1,5 +1,5 @@
 {
-  "name": "tictactoe",
+  "name": "ttt",
   "version": "1.0.0",
   "description": "A Tic-Tac-Toe game with React and an unbeatable AI.",
   "main": "./src/js/game/index.js",
@@ -10,6 +10,7 @@
     "test": "mocha --compilers js:babel-register",
     "watch": "babel --watch src -d lib"
   },
+  "private": true,
   "author": "Goh Jia Hao",
   "license": "MIT",
   "devDependencies": {
@@ -60,7 +61,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jiahaog/tictactoe.git"
+    "url": "git+https://github.com/jiahaog/ttt.git"
   },
   "keywords": [
     "es6",
@@ -70,7 +71,7 @@
     "minimax"
   ],
   "bugs": {
-    "url": "https://github.com/jiahaog/tictactoe/issues"
+    "url": "https://github.com/jiahaog/ttt/issues"
   },
-  "homepage": "https://github.com/jiahaog/tictactoe#readme"
+  "homepage": "https://github.com/jiahaog/ttt#readme"
 }
