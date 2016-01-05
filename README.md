@@ -2,7 +2,7 @@
 
 A Tic-Tac-Toe game with React and an unbeatable AI.
 
-[Play it here!](http://jiahaog.github.io/tictactoe/)
+[Play it here!](http://jiahaog.github.io/ttt/)
 
 ## Introduction
 Even though this might seem like a simple project, I was carried away and ended up making it way more comprehensive than I initially wanted it to be. Initially, I just wanted to make a simple AI for Tic-Tac-Toe after reading [this blog post](http://neverstopbuilding.com/minimax), but it led to me experimenting with ES6, Web Workers, React, Gulp and even headaches such as making the game mobile responsive in the across browsers and devices.
