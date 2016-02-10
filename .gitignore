@@ -3,6 +3,9 @@
 
 # Node.js
 
+# ignore gulp-gh-pages cache
+.publish
+
 # ignore compiled lib files
 lib
 dist
