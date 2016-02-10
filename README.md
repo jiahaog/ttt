@@ -1,4 +1,4 @@
-# T T T [![Build Status](https://travis-ci.org/jiahaog/tictactoe.svg?branch=master)](https://travis-ci.org/jiahaog/tictactoe)
+# T T T [![Build Status](https://travis-ci.org/jiahaog/ttt.svg?branch=master)](https://travis-ci.org/jiahaog/ttt)
 
 A Tic-Tac-Toe game with React and an unbeatable AI.
 
